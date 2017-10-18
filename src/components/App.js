@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import '../styles/App.css';
+import React, { Component } from 'react'
+import logo from './logo.svg'
+import '../styles/App.css'
 import LasInputFile from '../containers/LasInputFile'
 import DisplayLasFile from '../containers/DisplayLasFile'
 
@@ -17,8 +17,9 @@ class App extends Component {
         <LasInputFile />
         <DisplayLasFile />
         </div>
-    );
+    )
   }
 }
 
-export default App; 
+export default App
+

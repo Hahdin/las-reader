@@ -3,7 +3,7 @@ import InputFile from '../components/InputFile'
 import { _openFile } from '../actions'
 
 const mapStateToProps = (state, ownProps) => {
-  return ({filter: '.las'})
+  return ({filter: '.las, .txt, .csv'})
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
