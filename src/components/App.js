@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
-import './App.css';
+import '../styles/App.css';
 import LasInputFile from '../containers/LasInputFile'
+import DisplayLasFile from '../containers/DisplayLasFile'
 
 class App extends Component {
-  
+
   render() {
     console.log('app render')
     return (
@@ -14,9 +15,10 @@ class App extends Component {
           <h1 className="App-title">Welcome</h1>
         </header>
         <LasInputFile />
-      </div>
+        <DisplayLasFile />
+        </div>
     );
   }
 }
 
-export default App;
+export default App; 

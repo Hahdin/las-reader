@@ -36,7 +36,7 @@ export const createStore = (initialState = {}) => {
     )
   )
   return store
-}  
+}
 
 render(
   <Provider store={createStore()}>
