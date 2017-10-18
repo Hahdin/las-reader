@@ -1,25 +1,25 @@
 import { connect } from 'react-redux'
 import DisplayFile from '../components/DisplayFile'
-import { _showFile } from '../actions'
 import { bindActionCreators } from 'redux'
 
 const mapStateToProps = (state, ownProps) => {
-  console.log('Display mapStateToProps',state, ownProps)
   let keys = Object.keys(state.files)
+  let file = getFile(keys, state)
+  return ({
+    file: file
+  })
+}
+
+const getFile = (keys, state) => {
   let file = ''
-  keys.forEach(key =>{
-    console.log(key)
-    console.log(state.files[key])
+  keys.forEach(key => {
     if (key === state.files[key].name)
       file = state.files[key].raw
   })
-  return ({
-    file: file
-  }) 
+  return file
 }
 
-const mapDispatchToProps = (dispatch, ownProps) =>{
-  dispatch(_showFile(true))
+const mapDispatchToProps = (dispatch, ownProps) => {
 }
 
 const DisplayLasFile = connect(
@@ -27,4 +27,6 @@ const DisplayLasFile = connect(
   mapDispatchToProps
 )(DisplayFile)
 
-export default DisplayLasFile 
+export default DisplayLasFile
+
+

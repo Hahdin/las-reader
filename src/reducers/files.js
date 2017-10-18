@@ -18,12 +18,6 @@ const files = (state = [], action) => {
           raw: action.raw
         }
       }
-    case SHOW_FILE:
-    console.log('SHOW_FILE', action)
-    return {
-      ...state,
-      show: action.show
-    }
     default:
       return state
   }

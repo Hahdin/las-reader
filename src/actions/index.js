@@ -1,5 +1,4 @@
 export const OPEN_FILE = 'OPEN_FILE'
-export const SHOW_FILE = 'SHOW_FILE'
 
 let nextWellId = 2
 export const clickWell = (name, id) => {
@@ -25,19 +24,10 @@ export const openFile = (file, rawData) => {
     raw: rawData
   })
 }
-export const _showFile = (show) => {
-  console.log('showFile', show)
-  return ({
-    type: SHOW_FILE,
-    show: show,
-  })
-}
-
 
 //thunks
 export const _openFile = (file, rawData) =>{
   return (dispatch, getState) => {
     dispatch(openFile(file, rawData))
-    dispatch(_showFile(true))
   }
 }
