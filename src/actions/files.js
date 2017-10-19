@@ -1,53 +1,45 @@
-import {getLine, processLine} from '../utils/lib'
-
-export const OPEN_FILE = 'OPEN_FILE'
-export const PARSE_FILE = 'PARSE_FILE'
-export const FILE_STATE_ASCII = 'FILE_STATE_ASCII'
-export const FILE_STATE_FIRST = 'FILE_STATE_FIRST'
-export const ADD_HEADING = 'ADD_HEADING'
-export const INC_DATA = 'INC_DATA'
-export const RESET_FILESTATE = 'RESET_FILESTATE'
-export const _JSON = '_JSON'
+import {getLine, processLine, processLineNoFormat} from '../utils/lib'
+import types from '../types/types'
 
 export const saveJSON = (json) => {
   return ({
-    type: _JSON,
+    type: types._JSON,
     object: json,
   })
 }
 
 export const incrementData = () => {
   return ({
-    type: INC_DATA,
+    type: types.INC_DATA,
   })
 }
 
 export const fileStateAscii = (bool) => {
   return ({
-    type: FILE_STATE_ASCII,
+    type: types.FILE_STATE_ASCII,
     bool: bool,
   })
 }
 export const fileStateFirst = (bool) => {
   return ({
-    type: FILE_STATE_FIRST,
+    type: types.FILE_STATE_FIRST,
     bool: bool,
   })
 }
 
 export const resetFilestate = () => {
   return ({
-    type: RESET_FILESTATE,
+    type: types.RESET_FILESTATE,
   })
 }
 export const addHeading = () => {
   return ({
-    type: ADD_HEADING,
+    type: types.ADD_HEADING,
   })
 }
 export const openFile = (file, rawData) => {
   return ({
-    type: OPEN_FILE,
+    type: types.OPEN_FILE,
     file: file,
     raw: rawData
   })
@@ -67,15 +59,28 @@ export const parseFile = (rawData) =>{
     rawData = data.rawData// rawData with line removed
     let processedLine = ''
     while (line && line.length > 0){
-      processedLine += processLine(line, dispatch, getState)
+      processedLine += processLineNoFormat(line, dispatch, getState)
       data = getLine(rawData)
       line = data.line
+      console.log(line)
       rawData = data.rawData
     }
-    console.log('finally', processedLine)
+    //console.log('finally', processedLine)
     dispatch(saveJSON(processedLine))
     dispatch(resetFilestate())
   }
+}
+
+export default {
+  parseFile,
+  _openFile,
+  openFile,
+  addHeading,
+  resetFilestate,
+  fileStateFirst,
+  fileStateAscii,
+  incrementData,
+  saveJSON,  
 }
 
 

@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import InputFile from '../components/InputFile'
-import { _openFile, parseFile } from '../actions'
+import { _openFile, parseFile } from '../actions/files'
 
 const mapStateToProps = (state, ownProps) => {
   return ({filter: '.las, .txt, .csv'})//files allowed

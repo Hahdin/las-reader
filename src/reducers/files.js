@@ -6,7 +6,7 @@ import {
   RESET_FILESTATE,
   INC_DATA,
   _JSON,
-} from '../actions'
+} from '../types/types'
 
 const FILE_STATE = 'FILE_STATE'
 const getInit = () => {
