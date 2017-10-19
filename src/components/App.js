@@ -7,7 +7,6 @@ import DisplayLasFile from '../containers/DisplayLasFile'
 class App extends Component {
 
   render() {
-    console.log('app render')
     return (
       <div className="App">
         <header className="App-header">

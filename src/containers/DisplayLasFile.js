@@ -10,6 +10,9 @@ const mapStateToProps = (state, ownProps) => {
   })
 }
 
+//  the store holds all files opened during a session, the 'name' field is updated
+//  so will always hold the name of the currently open file. This will use the name
+//  to find the file in the store and return the raw data of the file
 const getFile = (keys, state) => {
   let file = ''
   keys.forEach(key => {
@@ -20,6 +23,7 @@ const getFile = (keys, state) => {
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
+  return {}
 }
 
 const DisplayLasFile = connect(

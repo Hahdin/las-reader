@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import '../styles/DisplayFile.css';
 
 const DisplayFile = ({ file }) => {
-  console.log('DisplayFile ')
   return (
     <div id= 'file'>
       <hr/>

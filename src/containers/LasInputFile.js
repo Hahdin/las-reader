@@ -1,9 +1,9 @@
 import { connect } from 'react-redux'
 import InputFile from '../components/InputFile'
-import { _openFile } from '../actions'
+import { _openFile, parseFile } from '../actions'
 
 const mapStateToProps = (state, ownProps) => {
-  return ({filter: '.las, .txt, .csv'})
+  return ({filter: '.las, .txt, .csv'})//files allowed
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
@@ -12,6 +12,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     const reader = new FileReader()
     reader.onload = (event) => {
       dispatch(_openFile(fl[0], event.target.result))
+      dispatch(parseFile(event.target.result))
     }
     reader.readAsText(fl[0])
   }
