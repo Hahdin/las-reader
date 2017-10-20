@@ -9,6 +9,9 @@ export const _JSON = '_JSON'
 
 //LAS
 export const ADD_SECTION = 'ADD_SECTION'
+export const ADD_DATA = 'ADD_DATA'
+export const ADD_ASCII = 'ADD_ASCII'
+export const RESET_LAS = 'RESET_LAS'
 
 export default {
     OPEN_FILE,
@@ -21,4 +24,7 @@ export default {
     _JSON,
     //LAS
     ADD_SECTION,
+    ADD_DATA,
+    ADD_ASCII,
+    RESET_LAS,
 }

@@ -30,6 +30,9 @@ const IsFirst = (getState) =>{
   return getState().files['FILE_STATE'].IsFirst
 }
 
+
+
+
 export const processLine = (line, dispatch, getState) => {
   if (line.startsWith('#'))//comment, skip
     return ''

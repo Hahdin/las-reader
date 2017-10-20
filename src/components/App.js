@@ -2,7 +2,9 @@ import React, { Component } from 'react'
 import logo from './logo.svg'
 import '../styles/App.css'
 import LasInputFile from '../containers/LasInputFile'
-import DisplayLasFile from '../containers/DisplayLasFile'
+import LasHeader from '../containers/LasHeader'
+import VersionSection from '../containers/VersionSection'
+import WellSection from '../containers/WellSection'
 
 class App extends Component {
 
@@ -14,7 +16,9 @@ class App extends Component {
           <h1 className="App-title">Welcome</h1>
         </header>
         <LasInputFile />
-        <DisplayLasFile />
+        <LasHeader />
+        <VersionSection />
+        <WellSection />
         </div>
     )
   }
