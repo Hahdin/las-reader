@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import '../styles/Section.css';
 
-const Section = ({ section, heading }) => {
+const Section = ({ section, heading}) => {
   let keys = Object.keys(section)
   let items = []
   keys.forEach((key, i) =>{

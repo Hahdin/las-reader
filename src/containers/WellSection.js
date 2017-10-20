@@ -2,10 +2,9 @@ import { connect } from 'react-redux'
 import Section from '../components/Section'
 
 const mapStateToProps = (state, ownProps) => {
-    console.log('WellSection state, props', state, ownProps)
   return ({
       section: state.lasFile.WELL || '',
-      heading: 'Well'
+      heading: 'Well',
     })
 }
 

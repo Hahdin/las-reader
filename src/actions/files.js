@@ -1,6 +1,14 @@
-import { getLine, processLine, processLineNoFormat } from '../utils/lib'
 import types from '../types/types'
-import { addSection, addData, addAscii, reset } from './las'
+import { 
+  addSection, 
+  addData, 
+  addAscii, 
+  reset,
+  readingVers,
+  readingWell,
+  readingCurve,
+  readingAscii,
+} from './las'
 export const saveJSON = (json) => {
   return ({
     type: types._JSON,
@@ -52,6 +60,24 @@ export const _openFile = (file, rawData) => {
   }
 }
 
+export const getLine = (rawData) => {
+  var i = rawData.indexOf('\n')
+  if (i < 0)
+    return ''
+  var line = rawData.slice(0, i)
+  //remove from file
+  rawData = rawData.slice(i + 1)
+  return { line, rawData }
+}
+
+const resetReading = (dispatch) =>{
+  dispatch(readingVers(false))
+  dispatch(readingWell(false))
+  dispatch(readingCurve(false))
+  dispatch(readingAscii(false))
+  
+}
+
 export const parseFile = (rawData) => {
   return (dispatch, getState) => {
     dispatch(reset())
@@ -63,6 +89,7 @@ export const parseFile = (rawData) => {
     let section = ''//the current section we are processing
     let dataEntry = {}
     let dataLine = 0
+    let ascii = []
     while (line && line.length > 0) {
       if (line.startsWith('#')) {//comment, skip
         data = getLine(rawData)
@@ -77,25 +104,23 @@ export const parseFile = (rawData) => {
       }
       else if (section === 'ASCII'){
         dataLine ++
-        //data block
-        //grab the line, we can parse it out later
-        dispatch(addAscii(dataLine, line))
+        ascii.push(line)
       }
       else {//not a heading
         let dataLine = line.split(/\s{2,}/i)// separated by 2 or more spaces
         if (dataLine.length) {
           dataLine.forEach((item, i) => {
-            if (i == 0) {
+            if (i === 0) {
               dataEntry.mnem = item// data after the . is units (optional)
             }
             //second will be data
-            if (i == 1){
+            if (i === 1){
               if (item.startsWith(':'))
                 dataEntry.desc = item
               else
                 dataEntry.data = item
             }
-            if (i == 2)// desc
+            if (i === 2)// desc
             dataEntry.desc = item
           })
           dispatch(addData(section, dataEntry))
@@ -106,21 +131,32 @@ export const parseFile = (rawData) => {
       line = data.line
       rawData = data.rawData
     }
+    console.log(ascii)
+    dispatch(addAscii(ascii))
+    resetReading(dispatch)
   }
 }
 
 const getSections = (line, dispatch) => {
   if (line.search(/~a\w?/i) >= 0) {
     dispatch(fileStateAscii(true))
+    resetReading(dispatch)
+    dispatch(readingAscii(true))
     line = 'ASCII';
   }
   if (line.search(/~V\w?/i) >= 0) {
+    resetReading(dispatch)
+    dispatch(readingVers(true))
     line = 'VERSION';
   }
   if (line.search(/~W\w?/i) >= 0) {
+    resetReading(dispatch)
+    dispatch(readingWell(true))
     line = 'WELL';
   }
   if (line.search(/~C\w?/i) >= 0) {
+    resetReading(dispatch)
+    dispatch(readingCurve(true))
     line = 'CURVE_INFORMATION';
   }
   return line;

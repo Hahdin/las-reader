@@ -5,6 +5,8 @@ import LasInputFile from '../containers/LasInputFile'
 import LasHeader from '../containers/LasHeader'
 import VersionSection from '../containers/VersionSection'
 import WellSection from '../containers/WellSection'
+import CurveSection from '../containers/CurveSection'
+import AsciiSection from '../containers/AsciiSection'
 
 class App extends Component {
 
@@ -19,10 +21,12 @@ class App extends Component {
         <LasHeader />
         <VersionSection />
         <WellSection />
+        <CurveSection /> 
+        <AsciiSection />
         </div>
     )
   }
 }
 
-export default App
+export default App 
 

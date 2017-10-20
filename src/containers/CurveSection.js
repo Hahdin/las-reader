@@ -3,18 +3,18 @@ import Section from '../components/Section'
 
 const mapStateToProps = (state, ownProps) => {
   return ({
-      section: state.lasFile.VERSION || '',
-      heading: 'Version',
+      section: state.lasFile.CURVE_INFORMATION || '',
+      heading: 'Curve Information',
     })
 }
 
-const mapDispatchToProps = (dispatch, ownProps) => ({
+const mapDispatchToProps = (dispatch, ownProps) => ({ 
   
 })
 
-const VersionSection = connect(
+const CurveSection = connect(
   mapStateToProps,
   mapDispatchToProps
 )(Section)
 
-export default VersionSection
+export default CurveSection
