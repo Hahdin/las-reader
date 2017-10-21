@@ -1,9 +1,10 @@
 import { connect } from 'react-redux'
-import Header from '../components/Header'
+import InfoDiv from '../components/InfoDiv'
+import '../styles/InfoDivLas.css'
 
 const mapStateToProps = (state, ownProps) => {
   return ({
-    name: state.files.name || ''
+    info: state.files || ''
   })
 }
 
@@ -11,9 +12,9 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   
 })
 
-const LasHeader = connect(
+const LasInfoDiv = connect(
   mapStateToProps,
   mapDispatchToProps
-)(Header)
+)(InfoDiv)
 
-export default LasHeader
+export default LasInfoDiv

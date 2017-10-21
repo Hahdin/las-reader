@@ -64,7 +64,7 @@ export const getLine = (rawData) => {
   var i = rawData.indexOf('\n')
   if (i < 0)
     return ''
-  var line = rawData.slice(0, i)
+  var line = rawData.slice(0, i).replace(/\t|\r|\"/g, '')
   //remove from file
   rawData = rawData.slice(i + 1)
   return { line, rawData }

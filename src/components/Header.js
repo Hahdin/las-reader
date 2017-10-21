@@ -1,15 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import '../styles/common.css'
 
-const Header = ({ name, state }) => {
-  let txt =  (state.lasFile.READING_VER || 
-    state.lasFile.READING_WELL || 
-    state.lasFile.READING_CURVE || 
-    state.lasFile.READING_ASCII) ? 'Reading...' : ''
+const Header = ({ name}) => {
   return (
     <div>
-      <h1>{name}</h1>
-      <h2>{txt}</h2>
+      <h1 id='h1'>{name}</h1>
     </div>
   )
 }
