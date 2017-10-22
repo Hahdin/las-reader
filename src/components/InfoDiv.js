@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 //import '../styles/InfoDivLas.css'
 
 const InfoDiv = ({ info}) => {
-  console.log(info)
+  //console.log(info)
   if(!info.name)
     return <div></div>
   let items = []
@@ -22,6 +22,6 @@ const InfoDiv = ({ info}) => {
 }
 
 InfoDiv.propTypes = {
-  name: PropTypes.string.isRequired
+  info: PropTypes.object.isRequired
 }
 export default InfoDiv

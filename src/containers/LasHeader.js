@@ -3,7 +3,8 @@ import Header from '../components/Header'
 
 const mapStateToProps = (state, ownProps) => {
   return ({
-    name: state.files.name || ''
+    name: state.files.name || '',
+    info: state.files.reading
   })
 }
 

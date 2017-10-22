@@ -3,7 +3,7 @@ import Section from '../components/Section'
 
 const mapStateToProps = (state, ownProps) => {
   return ({
-      section: state.lasFile.CURVE_INFORMATION || '',
+      section: state.lasFile.CURVE_INFORMATION ||  {},
       heading: 'Curve Information',
     })
 }

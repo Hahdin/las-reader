@@ -3,7 +3,7 @@ import Section from '../components/Section'
 
 const mapStateToProps = (state, ownProps) => {
   return ({
-      section: state.lasFile.VERSION || '',
+      section: state.lasFile.VERSION ||  {},
       heading: 'Version',
     })
 }

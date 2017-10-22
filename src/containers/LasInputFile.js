@@ -11,7 +11,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     if (!fl.length) return
     const reader = new FileReader()
     reader.onload = (event) => {
-      console.log('success')
+      //console.log('success')
       dispatch(_openFile(fl[0], event.target.result))
       dispatch(parseFile(event.target.result))
     }

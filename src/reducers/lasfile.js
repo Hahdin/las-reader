@@ -4,27 +4,11 @@ import {
   ADD_DATA,
   ADD_ASCII,
   RESET_LAS,
-  READING_VER,
-  READING_WELL,
-  READING_CURVE,
-  READING_ASCII,
 } from '../types/types'
 const ASCII = 'ASCII'
 
-const initialState = {
-  READING_WELL: false
-}
-
 const lasFile = (state = [], action) => {
   switch (action.type) {
-    case READING_VER:
-    case READING_WELL:
-    case READING_CURVE:
-    case READING_ASCII:
-      return {
-        ...state,
-        [action.type]: action.bool
-      }
     case RESET_LAS:
       return []
     case ADD_SECTION:
@@ -39,6 +23,8 @@ const lasFile = (state = [], action) => {
         [action.section]:{
           ...state[action.section],
           [action.data.mnem]:{
+            mnem: action.data.mnem,
+            unit: action.data.unit,
             data: action.data.data,
             desc: action.data.desc
           }

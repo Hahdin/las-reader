@@ -6,7 +6,12 @@ const Section = ({ section, heading}) => {
   let keys = Object.keys(section)
   let items = []
   keys.forEach((key, i) =>{
-    items.push(`${key}` + ": " +  JSON.stringify(section[key]).replace(/\\r|{|}|\"/g, '') )
+    let things = Object.keys(section[key])
+    let entry = ''
+    things.forEach(thing =>{
+      entry += ' ' +JSON.stringify(section[key][thing]).replace(/\\r|{|}|\"/g, '')
+    })
+    items.push(entry)
   })
   let data = items.map( item =>{
     return (<li>{item}</li>)

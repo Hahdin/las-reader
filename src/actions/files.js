@@ -1,43 +1,15 @@
 import types from '../types/types'
-import { 
-  addSection, 
-  addData, 
-  addAscii, 
+import {
+  addSection,
+  addData,
+  addAscii,
   reset,
-  readingVers,
-  readingWell,
-  readingCurve,
-  readingAscii,
 } from './las'
-export const saveJSON = (json) => {
-  return ({
-    type: types._JSON,
-    object: json,
-  })
-}
 
-export const incrementData = () => {
+export const readingFile = (bool) => {
   return ({
-    type: types.INC_DATA,
-  })
-}
-
-export const fileStateAscii = (bool) => {
-  return ({
-    type: types.FILE_STATE_ASCII,
-    bool: bool,
-  })
-}
-export const fileStateFirst = (bool) => {
-  return ({
-    type: types.FILE_STATE_FIRST,
-    bool: bool,
-  })
-}
-
-export const resetFilestate = () => {
-  return ({
-    type: types.RESET_FILESTATE,
+    type: types.READING_FILE,
+    bool
   })
 }
 export const addHeading = () => {
@@ -57,106 +29,172 @@ export const openFile = (file, rawData) => {
 export const _openFile = (file, rawData) => {
   return (dispatch, getState) => {
     dispatch(openFile(file, rawData))
+    dispatch(readingFile(false))
   }
 }
 
 export const getLine = (rawData) => {
   var i = rawData.indexOf('\n')
-  if (i < 0)
+  let ii = rawData.search(/\n/g)
+  //console.log('i, ii', i, ii)
+  if (i === RangeError){
+    console.log('range error')
     return ''
-  var line = rawData.slice(0, i).replace(/\t|\r|\"/g, '')
-  //remove from file
-  rawData = rawData.slice(i + 1)
+  }
+
+  //console.log('getLine', i)
+  let line = ''
+  if (i < 0)
+    return { line, rawData }
+  //try {
+    line = rawData.slice(0, i).replace(/\t|\r|\"/g, '')
+    if (!line.length) {
+      console.log('empty')
+      return { line, rawData }
+    }
+    //console.log('b4 replace', line, i)
+    if (!line || line.length <= 0){
+      console.log('line failed')
+      return { line, rawData }
+    }
+    line = line.replace(/\s+/g, ' ')
+    //remove from file
+    if ( i == 0)
+      console.log('zero index')
+    rawData = rawData.slice(i > 0 ? i+ 1 : 0)
+  //}
+  //catch (e) {
+  //  console.log('error', e)
+  //  return { line, rawData }
+  //}
   return { line, rawData }
 }
 
-const resetReading = (dispatch) =>{
-  dispatch(readingVers(false))
-  dispatch(readingWell(false))
-  dispatch(readingCurve(false))
-  dispatch(readingAscii(false))
-  
+
+const nextLine = (data, file, line) => {
+  data = getLine(file)
+  if (!data.line)
+    return { data, file, line }
+  line = data.line;
+  file = data.rawData;
+  return { data, file, line };
 }
 
-export const parseFile = (rawData) => {
+export const parseFile = (file) => {
   return (dispatch, getState) => {
-    dispatch(reset())
-    let data = getLine(rawData)
-    let line = data.line
-    rawData = data.rawData// rawData with line removed
-
-    //tracking
-    let section = ''//the current section we are processing
-    let dataEntry = {}
-    let dataLine = 0
+    let section = ''
     let ascii = []
-    while (line && line.length > 0) {
-      if (line.startsWith('#')) {//comment, skip
-        data = getLine(rawData)
-        line = data.line
-        rawData = data.rawData
-        continue
+    dispatch(readingFile(true))
+    const nextLineFromFile = (file) => {
+      try{
+      if (!file.length) {
+        dispatch(readingFile(false))
+        console.log('1')
+        return
       }
-      if (line.indexOf('~') >= 0) {//section heading
+      let data// = getLine(file)
+      let line// = data.line.replace(/\s+/g, ' ')
+      ({ data, file, line } = nextLine(data, file, line))
+      file = data.rawData// rawData with line removed
+      //console.log('remaining', file.length)
+      if (!file){
+        console.log('2')
+        
+        return
+      }
+      if (!line){
+        console.log('3')
+        
+        return file.length ? nextLineFromFile(file) : null
+      }
+
+      if (line.startsWith('#')) {//comment, skip
+
+        return file.length ? nextLineFromFile(file) : null
+      }
+      if (line.startsWith('~')) {//section heading
         line = getSections(line, dispatch)
         section = line
         dispatch(addSection(line))
+        console.log('get section..',section)
+        
+        return file.length ? nextLineFromFile(file) : null
       }
-      else if (section === 'ASCII'){
-        dataLine ++
+      else if (section === 'ASCII') {
+        // let values = line.split(/\s+/g).filter(val => {
+        //   return parseFloat(val)
+        // })
+        // ascii.push(values)
         ascii.push(line)
+        //console.log('get ascii...')
+        return file.length ? nextLineFromFile(file) : null
       }
       else {//not a heading
-        let dataLine = line.split(/\s{2,}/i)// separated by 2 or more spaces
-        if (dataLine.length) {
-          dataLine.forEach((item, i) => {
-            if (i === 0) {
-              dataEntry.mnem = item// data after the . is units (optional)
-            }
-            //second will be data
-            if (i === 1){
-              if (item.startsWith(':'))
-                dataEntry.desc = item
-              else
-                dataEntry.data = item
-            }
-            if (i === 2)// desc
-            dataEntry.desc = item
-          })
-          dispatch(addData(section, dataEntry))
-          dataEntry = {}
+        //format MNEM.UNIT Data after unit space until colon: Description
+        let i = line.search(/\.\s+/)
+        let mnem = '', unit = '', data = '', desc = ''
+        if (i > 0) {//found space after . (no units), parse of mnem
+          mnem = line.slice(0, line.search(/\./))
+          line = line.slice(line.search(/\./) + 1)
         }
+        else {
+          i = line.search(/\s/)
+          mnem = line.slice(0, i)
+          line = line.slice(i + 1)
+          i = mnem.search(/\./)
+          unit = mnem.slice(i + 1)
+          mnem = mnem.slice(0, i)
+        }
+        //data and desc left
+        line = line.trim()
+        let dataAndDesc = line.split(/:/).filter(val => {
+          return val
+        })
+        if (dataAndDesc.length < 2)
+          desc = dataAndDesc[0]
+        else {
+          data = dataAndDesc[0]
+          desc = dataAndDesc[1]
+        }
+        let dataEntry = {
+          mnem: mnem,
+          unit: unit,
+          data: data,
+          desc: desc
+        }
+        dispatch(addData(section, dataEntry))
+        console.log('4')
+        return file.length ? nextLineFromFile(file) : null
       }
-      data = getLine(rawData)
-      line = data.line
-      rawData = data.rawData
+      }
+      catch (err) {
+        console.log('5: caught err', err)
+        return
+      }
     }
-    console.log(ascii)
-    dispatch(addAscii(ascii))
-    resetReading(dispatch)
+    if (file.length) {
+      console.log('start')
+      nextLineFromFile(file)
+      console.log('save ascii')
+      dispatch(addAscii(ascii))
+      console.log('set reading to false')
+      dispatch(readingFile(false))
+      console.log('finished')
+    }
   }
 }
 
 const getSections = (line, dispatch) => {
   if (line.search(/~a\w?/i) >= 0) {
-    dispatch(fileStateAscii(true))
-    resetReading(dispatch)
-    dispatch(readingAscii(true))
     line = 'ASCII';
   }
   if (line.search(/~V\w?/i) >= 0) {
-    resetReading(dispatch)
-    dispatch(readingVers(true))
     line = 'VERSION';
   }
   if (line.search(/~W\w?/i) >= 0) {
-    resetReading(dispatch)
-    dispatch(readingWell(true))
     line = 'WELL';
   }
   if (line.search(/~C\w?/i) >= 0) {
-    resetReading(dispatch)
-    dispatch(readingCurve(true))
     line = 'CURVE_INFORMATION';
   }
   return line;
@@ -167,11 +205,8 @@ export default {
   _openFile,
   openFile,
   addHeading,
-  resetFilestate,
-  fileStateFirst,
-  fileStateAscii,
-  incrementData,
-  saveJSON,
+  readingFile,
 }
+
 
 
