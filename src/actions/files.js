@@ -35,24 +35,14 @@ export const _openFile = (file, rawData) => {
 
 export const getLine = (rawData) => {
   var i = rawData.indexOf('\n')
-  let ii = rawData.search(/\n/g)
-  //console.log('i, ii', i, ii)
-  if (i === RangeError){
-    console.log('range error')
-    return ''
-  }
-
-  //console.log('getLine', i)
   let line = ''
   if (i < 0)
     return { line, rawData }
-  //try {
     line = rawData.slice(0, i).replace(/\t|\r|\"/g, '')
     if (!line.length) {
       console.log('empty')
       return { line, rawData }
     }
-    //console.log('b4 replace', line, i)
     if (!line || line.length <= 0){
       console.log('line failed')
       return { line, rawData }
@@ -62,11 +52,6 @@ export const getLine = (rawData) => {
     if ( i == 0)
       console.log('zero index')
     rawData = rawData.slice(i > 0 ? i+ 1 : 0)
-  //}
-  //catch (e) {
-  //  console.log('error', e)
-  //  return { line, rawData }
-  //}
   return { line, rawData }
 }
 
@@ -80,54 +65,35 @@ const nextLine = (data, file, line) => {
   return { data, file, line };
 }
 
-export const parseFile = (file) => {
+export const parseFile = (rawData) => {
   return (dispatch, getState) => {
-    let section = ''
+    dispatch(reset())
+    let data = getLine(rawData)
+    let line = data.line
+    rawData = data.rawData// rawData with line removed
+
+    //tracking
+    let section = ''//the current section we are processing
+    let dataEntry = {}
+    let dataLine = 0
     let ascii = []
-    dispatch(readingFile(true))
-    const nextLineFromFile = (file) => {
-      try{
-      if (!file.length) {
-        dispatch(readingFile(false))
-        console.log('1')
-        return
-      }
-      let data// = getLine(file)
-      let line// = data.line.replace(/\s+/g, ' ')
-      ({ data, file, line } = nextLine(data, file, line))
-      file = data.rawData// rawData with line removed
-      //console.log('remaining', file.length)
-      if (!file){
-        console.log('2')
-        
-        return
-      }
-      if (!line){
-        console.log('3')
-        
-        return file.length ? nextLineFromFile(file) : null
-      }
-
+    while (line && line.length > 0) {
       if (line.startsWith('#')) {//comment, skip
-
-        return file.length ? nextLineFromFile(file) : null
+        data = getLine(rawData)
+        line = data.line
+        rawData = data.rawData
+        continue
       }
-      if (line.startsWith('~')) {//section heading
+      if (line.indexOf('~') >= 0) {//section heading
         line = getSections(line, dispatch)
         section = line
         dispatch(addSection(line))
-        console.log('get section..',section)
-        
-        return file.length ? nextLineFromFile(file) : null
       }
-      else if (section === 'ASCII') {
-        // let values = line.split(/\s+/g).filter(val => {
-        //   return parseFloat(val)
-        // })
-        // ascii.push(values)
-        ascii.push(line)
-        //console.log('get ascii...')
-        return file.length ? nextLineFromFile(file) : null
+      else if (section === 'ASCII'){
+        let values = line.split(/\s+/g).filter(val => {
+          return parseFloat(val)
+        })
+        ascii.push(values)
       }
       else {//not a heading
         //format MNEM.UNIT Data after unit space until colon: Description
@@ -163,26 +129,17 @@ export const parseFile = (file) => {
           desc: desc
         }
         dispatch(addData(section, dataEntry))
-        console.log('4')
-        return file.length ? nextLineFromFile(file) : null
+        
       }
-      }
-      catch (err) {
-        console.log('5: caught err', err)
-        return
-      }
+      data = getLine(rawData)
+      line = data.line
+      rawData = data.rawData
     }
-    if (file.length) {
-      console.log('start')
-      nextLineFromFile(file)
-      console.log('save ascii')
+    if (ascii.length)
       dispatch(addAscii(ascii))
-      console.log('set reading to false')
-      dispatch(readingFile(false))
-      console.log('finished')
-    }
   }
 }
+
 
 const getSections = (line, dispatch) => {
   if (line.search(/~a\w?/i) >= 0) {

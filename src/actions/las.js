@@ -20,6 +20,7 @@ export const addData = (section, data) =>{
   })
 }
 export const addAscii = ( data) =>{
+  console.log('add ascii', data)
   return ({
     type: types.ADD_ASCII,
     data: data,

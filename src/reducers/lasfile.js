@@ -7,7 +7,13 @@ import {
 } from '../types/types'
 const ASCII = 'ASCII'
 
-const lasFile = (state = [], action) => {
+const initialState = {
+  [ASCII]:{
+    data: []
+  }
+}
+
+const lasFile = (state = initialState, action) => {
   switch (action.type) {
     case RESET_LAS:
       return []
@@ -15,6 +21,7 @@ const lasFile = (state = [], action) => {
       return {
         ...state,
         [action.section]:{
+          ...state[action.section]
         }
       }
     case ADD_DATA:
@@ -31,9 +38,14 @@ const lasFile = (state = [], action) => {
         }
       }
     case ADD_ASCII:
+    //console.log('reducer: add ascii', action, state)
     return {
       ...state,
-      [ASCII]:  action.data
+      [ASCII]: {
+        //data: state[ASCII].data.concat(action.data)
+        data: action.data
+      }
+      
       
     }
   default:
