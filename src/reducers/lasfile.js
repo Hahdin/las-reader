@@ -4,10 +4,13 @@ import {
   ADD_DATA,
   ADD_ASCII,
   RESET_LAS,
+  CURRENT_SECTION,
 } from '../types/types'
 const ASCII = 'ASCII'
 
 const initialState = {
+  section: '',
+  chunk: 0,
   [ASCII]:{
     data: []
   }
@@ -15,8 +18,20 @@ const initialState = {
 
 const lasFile = (state = initialState, action) => {
   switch (action.type) {
-    case RESET_LAS:
-      return []
+    case CURRENT_SECTION:
+      return {
+        ...state,
+        section: action.section,
+        chunk: state.chunk + 1
+      }
+      case RESET_LAS://reset ascii only
+      console.log('reset')
+      return {
+        ...state,
+        [ASCII]: {
+          data:[]
+        }
+      }
     case ADD_SECTION:
       return {
         ...state,
@@ -38,15 +53,11 @@ const lasFile = (state = initialState, action) => {
         }
       }
     case ADD_ASCII:
-    //console.log('reducer: add ascii', action, state)
     return {
       ...state,
       [ASCII]: {
-        //data: state[ASCII].data.concat(action.data)
-        data: action.data
+        data: state[ASCII].data.concat(action.data)
       }
-      
-      
     }
   default:
       return state

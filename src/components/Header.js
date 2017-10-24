@@ -3,11 +3,9 @@ import PropTypes from 'prop-types'
 import '../styles/common.css'
 
 const Header = ({ name, info}) => {
-  let title = name
-
-  console.log('render header')
-  if (info){
-    console.log('rendering read msg', info)
+  let title = ''
+  let reading = info.reading
+  if (info.reading){
     title = 'Reading File, please wait...'
   }
   return (

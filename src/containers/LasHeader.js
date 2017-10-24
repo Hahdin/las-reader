@@ -4,7 +4,11 @@ import Header from '../components/Header'
 const mapStateToProps = (state, ownProps) => {
   return ({
     name: state.files.name || '',
-    info: state.files.reading
+    info: {
+      reading: state.files.reading,
+      file: state.lasFile
+    }
+
   })
 }
 
