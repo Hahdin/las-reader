@@ -9,6 +9,7 @@ export const ADD_SECTION = 'ADD_SECTION'
 export const ADD_DATA = 'ADD_DATA'
 export const ADD_ASCII = 'ADD_ASCII'
 export const RESET_LAS = 'RESET_LAS'
+export const CURRENT_SECTION = 'CURRENT_SECTION'
 
 export default {
     READING_FILE,
@@ -20,4 +21,5 @@ export default {
     ADD_DATA,
     ADD_ASCII,
     RESET_LAS,
+    CURRENT_SECTION,
 }

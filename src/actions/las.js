@@ -7,6 +7,12 @@ export const addSection = (section) => {
   })
 }
 
+export const currentSection = (section) =>{
+  return ({
+    type: types.CURRENT_SECTION,
+    section: section
+  })
+}
 export const reset = () =>{
   return ({
     type: types.RESET_LAS,
@@ -20,7 +26,7 @@ export const addData = (section, data) =>{
   })
 }
 export const addAscii = ( data) =>{
-  console.log('add ascii', data)
+  //console.log('add ascii', data)
   return ({
     type: types.ADD_ASCII,
     data: data,
@@ -62,5 +68,6 @@ export default {
   readingWell,
   readingCurve,
   readingAscii,
+  currentSection,
 }
 

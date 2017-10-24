@@ -9,6 +9,8 @@ const Section = ({ section, heading}) => {
     let things = Object.keys(section[key])
     let entry = ''
     things.forEach(thing =>{
+      if (!key)
+        return
       entry += ' ' +JSON.stringify(section[key][thing]).replace(/\\r|{|}|\"/g, '')
     })
     items.push(entry)
