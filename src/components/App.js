@@ -6,9 +6,8 @@ import LasHeader from '../containers/LasHeader'
 import VersionSection from '../containers/VersionSection'
 import WellSection from '../containers/WellSection'
 import CurveSection from '../containers/CurveSection'
-import AsciiSection from '../containers/AsciiSection'
 import LasInfoDiv from '../containers/LasInfoDiv'
-
+import LasChart  from '../containers/LasChart'
 class App extends Component {
 
   render() {
@@ -20,12 +19,11 @@ class App extends Component {
         </header>
         <LasInputFile />
         <LasHeader />
+        <LasChart /> 
         <LasInfoDiv />
         <VersionSection />
         <WellSection />
         <CurveSection /> 
-        <AsciiSection />
-
         </div>
     )
   }

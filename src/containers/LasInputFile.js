@@ -15,11 +15,11 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   onChange: (e) => {
     const seek = () => {
       if (offset >= file.size) {
-        console.log('offset larger than file')
+        //console.log('offset larger than file')
         dispatch(readingFile(false))
         return
       }
-      console.log('processing ' + offset + ' of ' + file.size)
+      //console.log('processing ' + offset + ' of ' + file.size)
       let slice = file.slice(offset, offset + chunk);
       fr.readAsText(slice);
     }
@@ -38,7 +38,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     fr.onload = (event) => {
       parse(dispatch, fr.result)
       .then(pr => {
-        console.log('finish parse')
+        //console.log('finish parse')
         offset += chunk
         seek()
       })

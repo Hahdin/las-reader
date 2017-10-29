@@ -92,13 +92,16 @@ export const parseFile = (rawData) => {
           rawData = data.rawData
           continue
         }
+        //console.log('line...')
         if (line.indexOf('~') >= 0) {//section heading
           line = getSections(line, dispatch)
           section = line
           dispatch(addSection(line))
           dispatch(currentSection(section))
-          if (section === 'ASCII')
+          if (section === 'ASCII'){
+            //console.log('reset ascii block')
             dispatch(reset())//rest at start of parsing ascii block
+          }
         }
         else if (section === 'ASCII') {
           let values = line.split(/\s+/g).filter(val => {
@@ -149,10 +152,12 @@ export const parseFile = (rawData) => {
         line = data.line
         rawData = data.rawData
       }
-      if (ascii.length)
+      if (ascii.length){
+        //console.log('dispatch addAscii')
         dispatch(addAscii(ascii))
+      }
     }
-    console.log('resolve')
+   // console.log('resolve')
 }
 
 
