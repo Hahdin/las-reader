@@ -1,20 +1,20 @@
 import { connect } from 'react-redux'
-import Section from '../components/Section'
+import InfoDiv from '../components/InfoDiv'
+import '../styles/InfoDivLas.css'
 
 const mapStateToProps = (state, ownProps) => {
   return ({
-      section: state.lasFile.VERSION ||  {},
-      heading: 'Version',
-    })
+    info: state.files || ''
+  })
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
   
 })
 
-const VersionSection = connect(
+const LasInfoDiv = connect(
   mapStateToProps,
   mapDispatchToProps
-)(Section)
+)(InfoDiv)
 
-export default VersionSection
+export default LasInfoDiv

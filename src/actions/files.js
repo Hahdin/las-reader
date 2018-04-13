@@ -1,35 +1,16 @@
-import { getLine, processLine, processLineNoFormat } from '../utils/lib'
 import types from '../types/types'
-import { addSection, addData, addAscii, reset } from './las'
-export const saveJSON = (json) => {
-  return ({
-    type: types._JSON,
-    object: json,
-  })
-}
+import {
+  addSection,
+  addData,
+  addAscii,
+  reset,
+  currentSection,
+} from './las'
 
-export const incrementData = () => {
+export const readingFile = (bool) => {
   return ({
-    type: types.INC_DATA,
-  })
-}
-
-export const fileStateAscii = (bool) => {
-  return ({
-    type: types.FILE_STATE_ASCII,
-    bool: bool,
-  })
-}
-export const fileStateFirst = (bool) => {
-  return ({
-    type: types.FILE_STATE_FIRST,
-    bool: bool,
-  })
-}
-
-export const resetFilestate = () => {
-  return ({
-    type: types.RESET_FILESTATE,
+    type: types.READING_FILE,
+    bool
   })
 }
 export const addHeading = () => {
@@ -45,73 +26,143 @@ export const openFile = (file, rawData) => {
   })
 }
 
-//thunks - testing
 export const _openFile = (file, rawData) => {
   return (dispatch, getState) => {
     dispatch(openFile(file, rawData))
+    dispatch(readingFile(true))
   }
+}
+
+export const getLine = (rawData) => {
+  var i = rawData.indexOf('\n')
+  let line = ''
+  if (i < 0)
+    return { line, rawData }
+    line = rawData.slice(0, i).replace(/\"/g, '')
+    if (!line.length) {
+      console.log('empty')
+      return { line, rawData }
+    }
+    if (!line || line.length <= 0){
+      console.log('line failed')
+      return { line, rawData }
+    }
+    line = line.replace(/\s+/g, ' ')
+    line = line.replace(/\t/g, ' ')
+    //console.log('line', line)
+    //remove from file
+    if ( i == 0)
+      console.log('zero index')
+    rawData = rawData.slice(i > 0 ? i+ 1 : 0)
+  return { line, rawData }
+}
+
+
+const nextLine = (data, file, line) => {
+  data = getLine(file)
+  if (!data.line)
+    return { data, file, line }
+  line = data.line;
+  file = data.rawData;
+  return { data, file, line };
 }
 
 export const parseFile = (rawData) => {
-  return (dispatch, getState) => {
-    dispatch(reset())
-    let data = getLine(rawData)
-    let line = data.line
-    rawData = data.rawData// rawData with line removed
 
-    //tracking
-    let section = ''//the current section we are processing
-    let dataEntry = {}
-    let dataLine = 0
-    while (line && line.length > 0) {
-      if (line.startsWith('#')) {//comment, skip
+    return (dispatch, getState) => {
+
+      let data = getLine(rawData)
+      let line = data.line
+      rawData = data.rawData// rawData with line removed
+
+      //tracking
+      let section = ''//the current section we are processing
+      let dataEntry = {}
+      let dataLine = 0
+      let ascii = []
+      while (line) {
+        //if this is not the first chunk(section), check what section we are in
+        let chunk = parseInt(getState().lasFile.chunk )
+        if (chunk > 1) {
+          section = getState().lasFile.section
+        }
+        if (line.startsWith('#')) {//comment, skip
+          data = getLine(rawData)
+          line = data.line
+          rawData = data.rawData
+          continue
+        }
+        //console.log('line...')
+        if (line.indexOf('~') >= 0) {//section heading
+          line = getSections(line, dispatch)
+          section = line
+          dispatch(addSection(line))
+          dispatch(currentSection(section))
+          if (section === 'ASCII'){
+            //console.log('reset ascii block')
+            dispatch(reset())//rest at start of parsing ascii block
+          }
+        }
+        else if (section === 'ASCII') {
+          let values = line.split(/\s+/g).filter(val => {
+            return parseFloat(val)
+          })
+          ascii.push(values)
+        }
+        else {//not a heading
+          //format MNEM.UNIT Data after unit space until colon: Description
+          let i = line.search(/\.\s+/)
+          let mnem = '', unit = '', data = '', desc = ''
+          if (i > 0) {//found space after . (no units), parse of mnem
+            mnem = line.slice(0, line.search(/\./))
+            line = line.slice(line.search(/\./) + 1)
+           // console.log('found space after .', mnem)
+          }
+          else {
+            i = line.search(/\s/)
+            //console.log('no space after .', i, line)
+            mnem = line.slice(0, i)
+            line = line.slice(i + 1)
+            //console.log('mnem', mnem, '---',  line)
+            i = mnem.search(/\./)
+            unit = mnem.slice(i + 1)
+            mnem = mnem.slice(0, i)
+            //console.log('units', mnem, unit)
+          }
+          //data and desc left
+          line = line.trim()
+          let dataAndDesc = line.split(/:/).filter(val => {
+            return val
+          })
+          if (dataAndDesc.length < 2)
+            desc = dataAndDesc[0]
+          else {
+            data = dataAndDesc[0]
+            desc = dataAndDesc[1]
+          }
+          let dataEntry = {
+            mnem: mnem,
+            unit: unit,
+            data: data,
+            desc: desc
+          }
+          dispatch(addData(section, dataEntry))
+        }
         data = getLine(rawData)
         line = data.line
         rawData = data.rawData
-        continue
       }
-      if (line.indexOf('~') >= 0) {//section heading
-        line = getSections(line, dispatch)
-        section = line
-        dispatch(addSection(line))
+      if (ascii.length){
+        //console.log('dispatch addAscii')
+        dispatch(addAscii(ascii))
       }
-      else if (section === 'ASCII'){
-        dataLine ++
-        //data block
-        //grab the line, we can parse it out later
-        dispatch(addAscii(dataLine, line))
-      }
-      else {//not a heading
-        let dataLine = line.split(/\s{2,}/i)// separated by 2 or more spaces
-        if (dataLine.length) {
-          dataLine.forEach((item, i) => {
-            if (i == 0) {
-              dataEntry.mnem = item// data after the . is units (optional)
-            }
-            //second will be data
-            if (i == 1){
-              if (item.startsWith(':'))
-                dataEntry.desc = item
-              else
-                dataEntry.data = item
-            }
-            if (i == 2)// desc
-            dataEntry.desc = item
-          })
-          dispatch(addData(section, dataEntry))
-          dataEntry = {}
-        }
-      }
-      data = getLine(rawData)
-      line = data.line
-      rawData = data.rawData
     }
-  }
+   // console.log('resolve')
 }
+
 
 const getSections = (line, dispatch) => {
   if (line.search(/~a\w?/i) >= 0) {
-    dispatch(fileStateAscii(true))
     line = 'ASCII';
   }
   if (line.search(/~V\w?/i) >= 0) {
@@ -131,11 +182,8 @@ export default {
   _openFile,
   openFile,
   addHeading,
-  resetFilestate,
-  fileStateFirst,
-  fileStateAscii,
-  incrementData,
-  saveJSON,
+  readingFile,
 }
+
 
 

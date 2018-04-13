@@ -2,11 +2,18 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import '../styles/Section.css';
 
-const Section = ({ section, heading }) => {
+const Section = ({ section, heading}) => {
   let keys = Object.keys(section)
   let items = []
   keys.forEach((key, i) =>{
-    items.push(`${key}` + ": " +  JSON.stringify(section[key]).replace(/\\r|{|}|\"/g, '') )
+    let things = Object.keys(section[key])
+    let entry = ''
+    things.forEach(thing =>{
+      if (!key)
+        return
+      entry += ' ' +JSON.stringify(section[key][thing]).replace(/\\r|{|}|\"/g, '')
+    })
+    items.push(entry)
   })
   let data = items.map( item =>{
     return (<li>{item}</li>)
