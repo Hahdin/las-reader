@@ -82,6 +82,7 @@ export const parseFile = (rawData) => {
       let ascii = []
       while (line) {
         //if this is not the first chunk(section), check what section we are in
+        line = line.trim()
         let chunk = parseInt(getState().lasFile.chunk )
         if (chunk > 1) {
           section = getState().lasFile.section
@@ -95,6 +96,7 @@ export const parseFile = (rawData) => {
         //console.log('line...')
         if (line.indexOf('~') >= 0) {//section heading
           line = getSections(line, dispatch)
+          //console.log('1',line)
           section = line
           dispatch(addSection(line))
           dispatch(currentSection(section))
@@ -107,10 +109,12 @@ export const parseFile = (rawData) => {
           let values = line.split(/\s+/g).filter(val => {
             return parseFloat(val)
           })
+         // console.log(values)
           ascii.push(values)
         }
         else {//not a heading
           //format MNEM.UNIT Data after unit space until colon: Description
+          //console.log('3', line)
           let i = line.search(/\.\s+/)
           let mnem = '', unit = '', data = '', desc = ''
           if (i > 0) {//found space after . (no units), parse of mnem
@@ -123,7 +127,7 @@ export const parseFile = (rawData) => {
             //console.log('no space after .', i, line)
             mnem = line.slice(0, i)
             line = line.slice(i + 1)
-            //console.log('mnem', mnem, '---',  line)
+            //console.log('mnem', mnem, '---',  line, i)
             i = mnem.search(/\./)
             unit = mnem.slice(i + 1)
             mnem = mnem.slice(0, i)
@@ -146,6 +150,7 @@ export const parseFile = (rawData) => {
             data: data,
             desc: desc
           }
+          //console.log('2',dataEntry)
           dispatch(addData(section, dataEntry))
         }
         data = getLine(rawData)

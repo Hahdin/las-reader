@@ -113,21 +113,41 @@ class Chart extends Component {
           this.state.chart.reset()
         }
         let data = this.props.info.file.ASCII.data
+        //console.log('##',data.length)
+        let dataArrays = []//depth/value
+        let depths = []
         data.forEach((point, i) => {
+          //console.log(point.length, i)
           point.forEach((value, j) => {
             if (j === 0) {
               //depth label
               this.state.chart.data.labels.push(parseFloat(value))
             }
-            if (j === 1) {
-              //data
-              value = parseFloat(value)
-              if (value === -999.25)
-                value = 0
-              this.state.chart.data.datasets.forEach((dataset) => {
-                //console.log('add data', value)
-                dataset.data.push(value);
-              })
+            else {
+              if (j === 1 && point.length == 2) {
+                //data
+                value = parseFloat(value)
+                if (value === -999.25)
+                  value = 0
+                this.state.chart.data.datasets.forEach((dataset) => {
+                  //console.log('add data', value)
+                  //console.log('##',dataset)
+                  dataset.data.push(value);
+                })
+              }
+              else{
+                if (j === point.length - 1){
+                  value = parseFloat(value)
+                  if (value === -999.25)
+                    value = 0
+                  this.state.chart.data.datasets.forEach((dataset) => {
+                    //console.log('add data', value)
+                    //console.log('##',dataset)
+                    dataset.data.push(value);
+                  })
+                }
+
+              }
             }
           })
           if (i === data.length - 1) {

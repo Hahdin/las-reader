@@ -25,7 +25,7 @@ const lasFile = (state = initialState, action) => {
         chunk: state.chunk + 1
       }
       case RESET_LAS://reset ascii only
-      console.log('reset')
+      console.log('lasFile reset')
       return {
         ...state,
         [ASCII]: {
