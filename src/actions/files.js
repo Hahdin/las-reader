@@ -70,7 +70,6 @@ const nextLine = (data, file, line) => {
 export const parseFile = (rawData) => {
 
     return (dispatch, getState) => {
-
       let data = getLine(rawData)
       let line = data.line
       rawData = data.rawData// rawData with line removed
@@ -96,12 +95,11 @@ export const parseFile = (rawData) => {
         //console.log('line...')
         if (line.indexOf('~') >= 0) {//section heading
           line = getSections(line, dispatch)
-          //console.log('1',line)
+          
           section = line
           dispatch(addSection(line))
           dispatch(currentSection(section))
-          if (section === 'ASCII'){
-            //console.log('reset ascii block')
+          if (section === 'CURVE_INFORMATION'){
             dispatch(reset())//rest at start of parsing ascii block
           }
         }
@@ -109,18 +107,15 @@ export const parseFile = (rawData) => {
           let values = line.split(/\s+/g).filter(val => {
             return parseFloat(val)
           })
-         // console.log(values)
           ascii.push(values)
         }
         else {//not a heading
           //format MNEM.UNIT Data after unit space until colon: Description
-          //console.log('3', line)
           let i = line.search(/\.\s+/)
           let mnem = '', unit = '', data = '', desc = ''
           if (i > 0) {//found space after . (no units), parse of mnem
             mnem = line.slice(0, line.search(/\./))
             line = line.slice(line.search(/\./) + 1)
-           // console.log('found space after .', mnem)
           }
           else {
             i = line.search(/\s/)
@@ -131,8 +126,8 @@ export const parseFile = (rawData) => {
             i = mnem.search(/\./)
             unit = mnem.slice(i + 1)
             mnem = mnem.slice(0, i)
-            //console.log('units', mnem, unit)
           }
+          //console.log('2',mnem, unit)
           //data and desc left
           line = line.trim()
           let dataAndDesc = line.split(/:/).filter(val => {
@@ -150,7 +145,7 @@ export const parseFile = (rawData) => {
             data: data,
             desc: desc
           }
-          //console.log('2',dataEntry)
+          //console.log('3',dataEntry)
           dispatch(addData(section, dataEntry))
         }
         data = getLine(rawData)
@@ -158,11 +153,9 @@ export const parseFile = (rawData) => {
         rawData = data.rawData
       }
       if (ascii.length){
-        //console.log('dispatch addAscii')
         dispatch(addAscii(ascii))
       }
     }
-   // console.log('resolve')
 }
 
 
@@ -177,6 +170,7 @@ const getSections = (line, dispatch) => {
     line = 'WELL';
   }
   if (line.search(/~C\w?/i) >= 0) {
+    console.log('found curve info', line)
     line = 'CURVE_INFORMATION';
   }
   return line;

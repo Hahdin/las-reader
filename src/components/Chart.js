@@ -32,7 +32,6 @@ class Chart extends Component {
   }
 
   popData() {
-
     return new Promise((resolve, reject) => {
       this.state.chart.data.labels.forEach(label => {
         this.state.chart.data.labels.pop()
@@ -40,7 +39,7 @@ class Chart extends Component {
       this.state.chart.data.datasets.forEach((dataset) => {
         dataset.data.forEach((data, i) => {
           dataset.data.pop()
-          if (i === dataset.data.length - 1){
+          if (i === dataset.data.length - 1) {
             resolve(true)
           }
         })
@@ -48,7 +47,7 @@ class Chart extends Component {
     })
   }
 
-  initChart(){
+  initChart() {
     let labels = []
     let op = 0.5
     let lineColor = ['rgba(255, 30, 30, ' + op + ')']
@@ -79,9 +78,9 @@ class Chart extends Component {
       }
     }
     let ctx = null
-    if ( this.state.chart){
+    if (this.state.chart) {
       this.state.chart.destroy()
-      this.setState({chart: null})
+      this.setState({ chart: null })
     }
 
     if (document.getElementById("myChart")) {
@@ -96,16 +95,33 @@ class Chart extends Component {
   }
 
   render() {
+    let curveIndex = -1
+    if (this.props.info.file.CURVE_INFORMATION) {
+      let curves = Object.keys(this.props.info.file.CURVE_INFORMATION)
+      curves.forEach((curve, i) => {
+        if (curve === this.props.info.file.chartCurve)
+          curveIndex = i
+      })
+    }
+
     let style = {
       height: '300px',
       width: '100%'
     }
     if (this.props.info.readingFile && this.state.chart) {
-      this.popData(this.state.chart).then(pr =>{
+      this.popData(this.state.chart).then(pr => {
         console.log('chart cleared of data')
       })
     }
-    else if (this.state.chart) {
+    else if (this.state.chart && curveIndex >= 1 ) {
+      this.state.chart.data.datasets.forEach( set =>{
+        if (set.label === 'Curve Data'){
+          set.data = []
+        }
+      })
+      this.state.chart.data.labels = []
+      console.log(this.state.chart.data.datasets)
+      
       if (this.props.info.file.ASCII.data.length > 0) {
         if (this.props.title !== this.state.title) {
           console.log('title change')
@@ -113,56 +129,38 @@ class Chart extends Component {
           this.state.chart.reset()
         }
         let data = this.props.info.file.ASCII.data
-        //console.log('##',data.length)
         let dataArrays = []//depth/value
         let depths = []
         data.forEach((point, i) => {
-          //console.log(point.length, i)
           point.forEach((value, j) => {
             if (j === 0) {
               //depth label
               this.state.chart.data.labels.push(parseFloat(value))
             }
             else {
-              if (j === 1 && point.length == 2) {
-                //data
+              if (j === curveIndex) {
                 value = parseFloat(value)
                 if (value === -999.25)
                   value = 0
                 this.state.chart.data.datasets.forEach((dataset) => {
-                  //console.log('add data', value)
-                  //console.log('##',dataset)
                   dataset.data.push(value);
                 })
               }
-              else{
-                if (j === point.length - 1){
-                  value = parseFloat(value)
-                  if (value === -999.25)
-                    value = 0
-                  this.state.chart.data.datasets.forEach((dataset) => {
-                    //console.log('add data', value)
-                    //console.log('##',dataset)
-                    dataset.data.push(value);
-                  })
-                }
-
-              }
             }
           })
-          if (i === data.length - 1) {
-            this.state.chart.update()
-          }
-        })
-      }
+        if (i === data.length - 1) {
+          this.state.chart.update()
+        }
+      })
     }
-    return (
+  }
+  return(
       <div>
-        <div id="chartContainer" style={style}>
-          <canvas id="myChart" style={style}></canvas>
-          {this.props.test()}
-          </div>
-      </div>
+  <div id="chartContainer" style={style}>
+    <canvas id="myChart" style={style}></canvas>
+    {this.props.test()}
+  </div>
+      </div >
     )
   }
 }
