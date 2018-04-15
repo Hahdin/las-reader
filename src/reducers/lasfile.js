@@ -5,11 +5,13 @@ import {
   ADD_ASCII,
   RESET_LAS,
   CURRENT_SECTION,
+  CHART_CURVE,
 } from '../types/types'
 const ASCII = 'ASCII'
 
 const initialState = {
   section: '',
+  chartCurve: '',
   chunk: 0,
   [ASCII]:{
     data: []
@@ -18,6 +20,12 @@ const initialState = {
 
 const lasFile = (state = initialState, action) => {
   switch (action.type) {
+    case CHART_CURVE:{
+      return {
+        ...state,
+        chartCurve: action.curve
+      }
+    }
     case CURRENT_SECTION:
       return {
         ...state,
@@ -25,11 +33,14 @@ const lasFile = (state = initialState, action) => {
         chunk: state.chunk + 1
       }
       case RESET_LAS://reset ascii only
-      console.log('lasFile reset')
+      //console.log('lasFile reset')
       return {
         ...state,
         [ASCII]: {
           data:[]
+        },
+        ['CURVE_INFORMATION']:{
+          
         }
       }
     case ADD_SECTION:
@@ -40,6 +51,7 @@ const lasFile = (state = initialState, action) => {
         }
       }
     case ADD_DATA:
+   // console.log('add data',action.data )
       return {
         ...state,
         [action.section]:{

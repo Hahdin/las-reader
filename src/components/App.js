@@ -8,6 +8,7 @@ import WellSection from '../containers/WellSection'
 import CurveSection from '../containers/CurveSection'
 import LasInfoDiv from '../containers/LasInfoDiv'
 import LasChart  from '../containers/LasChart'
+import CurveComboBox from '../containers/CurveComboBox'
 class App extends Component {
 
   render() {
@@ -18,6 +19,7 @@ class App extends Component {
           <h1 className="App-title">Welcome</h1>
         </header>
         <LasInputFile />
+        <CurveComboBox />
         <LasHeader />
         <LasChart /> 
         <LasInfoDiv />

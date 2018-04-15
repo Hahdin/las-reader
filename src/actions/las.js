@@ -1,5 +1,11 @@
 import types from '../types/types'
 
+export const chartCurve = (curve) =>{
+  return ({
+    type: types.CHART_CURVE,
+    curve: curve
+  })
+}
 export const addSection = (section) => {
   return ({
     type: types.ADD_SECTION,
@@ -69,5 +75,6 @@ export default {
   readingCurve,
   readingAscii,
   currentSection,
+  chartCurve,
 }
 

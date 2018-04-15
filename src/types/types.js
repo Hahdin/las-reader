@@ -10,6 +10,7 @@ export const ADD_DATA = 'ADD_DATA'
 export const ADD_ASCII = 'ADD_ASCII'
 export const RESET_LAS = 'RESET_LAS'
 export const CURRENT_SECTION = 'CURRENT_SECTION'
+export const CHART_CURVE = 'CHART_CURVE'
 
 export default {
     READING_FILE,
@@ -22,4 +23,5 @@ export default {
     ADD_ASCII,
     RESET_LAS,
     CURRENT_SECTION,
+    CHART_CURVE,
 }

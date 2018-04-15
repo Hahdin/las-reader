@@ -11,6 +11,10 @@ const Section = ({ section, heading}) => {
     things.forEach(thing =>{
       if (!key)
         return
+      if (!section[key][thing]){
+        ///console.log('missing thing?', section)
+        return 
+      }
       entry += ' ' +JSON.stringify(section[key][thing]).replace(/\\r|{|}|\"/g, '')
     })
     items.push(entry)
