@@ -49,8 +49,8 @@ class Chart extends Component {
 
   initChart() {
     let labels = []
-    let op = 0.5
-    let lineColor = ['rgba(255, 30, 30, ' + op + ')']
+    let op = 0.8
+    let lineColor = ['rgba(0, 155, 0, ' + op + ')']
 
     let body = {
       type: 'line',
@@ -61,9 +61,10 @@ class Chart extends Component {
           data: null,
           fill: false,
           borderColor: lineColor,
+          backgroundColor: ['rgba(155,0,0, 0.7)'],
           borderWidth: 1,
-          pointStyle: 'cross',
-          pointRadius: 0
+          pointStyle: 'circle',
+          pointRadius: 2
         }]
       },
       options: {

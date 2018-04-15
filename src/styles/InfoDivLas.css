@@ -1,13 +1,13 @@
 #info_head{
     color: rgb(1, 1, 19);
-    text-shadow: 2px 2px 5px #f11616;
+    text-shadow: 2px 2px 5px #f7f5f5;
 }
 #info_div{
     color: rgb(49, 47, 56);
-    background: rgb(253, 139, 139);
+    background: rgb(170, 163, 163);
     text-align: left;
     padding: 10px;
     text-shadow: 1px 1px 1px #f6f7f4;
     font-family: Arial, Helvetica, sans-serif;
-    box-shadow: -10px -10px 25px #630202;
+    box-shadow: -5px -5px 5px #000000;
 }

@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import '../styles/Drop.css'
 
 class ComboBox extends Component {
   constructor(props) {
@@ -19,8 +20,8 @@ class ComboBox extends Component {
   }
   render() {
     let style = {
-      backgroundColor: 'black',
-      color: 'white',
+      // backgroundColor: 'black',
+      // color: 'white',
       float: 'left'
     }
     let options = []
@@ -31,7 +32,7 @@ class ComboBox extends Component {
     return (
       <div >
         <br />
-        <select style={style}
+        <select style={style} className='dropbtn'
           onChange={this.onChange}
         >
           {options}

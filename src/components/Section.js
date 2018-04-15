@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import '../styles/Section.css';
+import '../styles/InfoDivLas.css';
 
 const Section = ({ section, heading}) => {
   let keys = Object.keys(section)
@@ -23,7 +24,7 @@ const Section = ({ section, heading}) => {
     return (<li>{item}</li>)
   })
   return (
-    <div id='sec_div'>
+    <div id='info_div'>
       <h2 id='sec_head' >{heading}</h2>
       <ul>{data}</ul>
     </div>
