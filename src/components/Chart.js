@@ -49,8 +49,8 @@ class Chart extends Component {
 
   initChart() {
     let labels = []
-    let op = 0.8
-    let lineColor = ['rgba(0, 155, 0, ' + op + ')']
+    let op = 1.0
+    let lineColor = ['rgba(0, 0, 0, ' + op + ')']
 
     let body = {
       type: 'line',
@@ -61,10 +61,10 @@ class Chart extends Component {
           data: null,
           fill: false,
           borderColor: lineColor,
-          backgroundColor: ['rgba(155,0,0, 0.7)'],
-          borderWidth: 1,
+          backgroundColor: ['rgba(255,255,255, 0.3)'],
+          borderWidth: 0.5,
           pointStyle: 'circle',
-          pointRadius: 2
+          pointRadius: 1
         }]
       },
       options: {
@@ -106,61 +106,56 @@ class Chart extends Component {
     }
 
     let style = {
-      height: '300px',
+      height: '600px',
       width: '100%'
     }
     if (this.props.info.readingFile && this.state.chart) {
       this.popData(this.state.chart).then(pr => {
         console.log('chart cleared of data')
+        this.state.chart.update()
       })
     }
-    else if (this.state.chart && curveIndex >= 1 ) {
-      this.state.chart.data.datasets.forEach( set =>{
-        if (set.label === 'Curve Data'){
+    else if (this.state.chart && curveIndex >= 1) {
+      this.state.chart.data.datasets.forEach(set => {
+        if (set.label === 'Curve Data') {
           set.data = []
         }
       })
       this.state.chart.data.labels = []
-      console.log(this.state.chart.data.datasets)
-      
-      if (this.props.info.file.ASCII.data.length > 0) {
+      //copy the data
+      let data = this.props.info.file.ASCII.data.slice(0)
+      //get our data
+      let ourLabels = data.map(line => {
+        return line[0]
+      })
+      let ourPoints = data.map(line => {
+        return parseFloat(line[curveIndex]) === -999.25 ? null : parseFloat(line[curveIndex])
+      })
+      if (data.length > 0) {
         if (this.props.title !== this.state.title) {
           console.log('title change')
           this.state.title = this.props.title
           this.state.chart.reset()
         }
-        let data = this.props.info.file.ASCII.data
-        let dataArrays = []//depth/value
-        let depths = []
-        data.forEach((point, i) => {
-          point.forEach((value, j) => {
-            if (j === 0) {
-              //depth label
-              this.state.chart.data.labels.push(parseFloat(value))
-            }
-            else {
-              if (j === curveIndex) {
-                value = parseFloat(value)
-                if (value === -999.25)
-                  value = 0
-                this.state.chart.data.datasets.forEach((dataset) => {
-                  dataset.data.push(value);
-                })
-              }
-            }
-          })
-        if (i === data.length - 1) {
-          this.state.chart.update()
-        }
-      })
+        ourLabels.map(label => {
+          this.state.chart.data.labels.push(parseFloat(label))
+        })
+        this.state.chart.data.datasets.forEach(set => {
+          if (set.label === 'Curve Data') {
+            ourPoints.map(point => {
+              set.data.push(point)
+            })
+            this.state.chart.update()
+          }
+        })
+      }
     }
-  }
-  return(
+    return (
       <div>
-  <div id="chartContainer" style={style}>
-    <canvas id="myChart" style={style}></canvas>
-    {this.props.test()}
-  </div>
+        <div id="chartContainer" style={style}>
+          <canvas id="myChart" style={style}></canvas>
+          {this.props.test()}
+        </div>
       </div >
     )
   }
