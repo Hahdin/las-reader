@@ -17,6 +17,26 @@ class Chart extends Component {
     }
   }
 
+  getBuckets(data, size){
+    let bucketSize = Math.round((data.length / 2) / size )
+    let count = 0
+    let bucket = []
+    let buckets = []
+    data.forEach(point =>{
+      if (count < bucketSize){
+        count++
+        bucket.push(point)
+      }
+      else{
+        buckets.push(bucket)
+        count = 0
+        bucket = []
+      }
+    })
+    bucket = []
+    return buckets
+  }
+
   componentDidMount() {
     this.initChart()
   }
@@ -72,7 +92,7 @@ class Chart extends Component {
         scales: {
           yAxes: [{
             ticks: {
-              beginAtZero: true
+              beginAtZero: true,
             }
           }]
         }
@@ -87,7 +107,8 @@ class Chart extends Component {
     if (document.getElementById("myChart")) {
       console.log('found chart in page')
       ctx = document.getElementById("myChart").getContext("2d")
-      this.state.chart = new ChartJs(ctx, body)
+      this.setState({chart: new ChartJs(ctx, body)})
+      //this.state.chart = new ChartJs(ctx, body)
       console.log('\t new chart!!')
     }
   }
@@ -131,6 +152,43 @@ class Chart extends Component {
       let ourPoints = data.map(line => {
         return parseFloat(line[curveIndex]) === -999.25 ? null : parseFloat(line[curveIndex])
       })
+
+      //bucket them
+      let labelBuckets = this.getBuckets(ourLabels, window.innerWidth / 4)
+      let pointsBuckets = this.getBuckets(ourPoints, window.innerWidth / 4)
+      //let labelBuckets = this.getBuckets(ourLabels, 10)
+      //let pointsBuckets = this.getBuckets(ourPoints, 10)
+      let pointsMinMax = []
+      let labelsMinMax = []
+      pointsBuckets.forEach(bucket =>{
+        let min = 0, max = 0
+        bucket.forEach((point, i) =>{
+          if( i === 0)
+            min = max = point
+          else{
+            min = point < min ? point : min
+            max = point > max ? point : max
+          }
+        })
+        pointsMinMax.push(min)
+        pointsMinMax.push(max)
+      })
+      labelBuckets.forEach( bucket =>{
+        let i = Math.round(bucket.length > 1 ? bucket.length / 2 : 0)
+        if (parseFloat(bucket[0]) == -999.25){
+          console.log('label i', i, bucket[0])
+        }
+        //console.log(bucket[0])
+        labelsMinMax.push(bucket[0])
+        labelsMinMax.push(bucket[i])
+      })
+
+      //console.log('$$',labelsMinMax, pointsMinMax)
+
+      data = pointsMinMax
+      ourLabels = labelsMinMax
+
+
       if (data.length > 0) {
         if (this.props.title !== this.state.title) {
           console.log('title change')
@@ -142,7 +200,7 @@ class Chart extends Component {
         })
         this.state.chart.data.datasets.forEach(set => {
           if (set.label === 'Curve Data') {
-            ourPoints.map(point => {
+            data.map(point => {
               set.data.push(point)
             })
             this.state.chart.update()

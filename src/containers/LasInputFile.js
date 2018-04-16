@@ -24,7 +24,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
       fr.readAsText(slice);
     }
 
-    let el = document.getElementById('file-input')
+    //let el = document.getElementById('file-input')
     const fl = e.target.files
     if (!fl.length) return
 
