@@ -4,7 +4,6 @@ import '../styles/common.css'
 
 const Header = ({ name, info}) => {
   let title = ''
-  let reading = info.reading
   if (info.reading){
     title = 'Reading File, please wait...'
   }

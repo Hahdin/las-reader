@@ -51,21 +51,21 @@ export const getLine = (rawData) => {
     line = line.replace(/\t/g, ' ')
     //console.log('line', line)
     //remove from file
-    if ( i == 0)
+    if ( i === 0)
       console.log('zero index')
     rawData = rawData.slice(i > 0 ? i+ 1 : 0)
   return { line, rawData }
 }
 
 
-const nextLine = (data, file, line) => {
-  data = getLine(file)
-  if (!data.line)
-    return { data, file, line }
-  line = data.line;
-  file = data.rawData;
-  return { data, file, line };
-}
+// const nextLine = (data, file, line) => {
+//   data = getLine(file)
+//   if (!data.line)
+//     return { data, file, line }
+//   line = data.line;
+//   file = data.rawData;
+//   return { data, file, line };
+// }
 
 export const parseFile = (rawData) => {
 
@@ -76,13 +76,13 @@ export const parseFile = (rawData) => {
 
       //tracking
       let section = ''//the current section we are processing
-      let dataEntry = {}
-      let dataLine = 0
+      //let dataEntry = {}
+      //let dataLine = 0
       let ascii = []
       while (line) {
         //if this is not the first chunk(section), check what section we are in
         line = line.trim()
-        let chunk = parseInt(getState().lasFile.chunk )
+        let chunk = parseInt(getState().lasFile.chunk, 10 )
         if (chunk > 1) {
           section = getState().lasFile.section
         }
