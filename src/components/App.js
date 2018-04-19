@@ -18,7 +18,9 @@ class App extends Component {
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Welcome</h1>
+          
         </header>
+        <h3>The code for this app can be viewed at <a href='https://github.com/Hahdin/las-reader' target="blank">Github</a></h3>
         <LasInputFile />
         <ScaleCheckbox />
         <br />
