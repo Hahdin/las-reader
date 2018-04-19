@@ -49,7 +49,6 @@ export const getLine = (rawData) => {
     }
     line = line.replace(/\s+/g, ' ')
     line = line.replace(/\t/g, ' ')
-    //console.log('line', line)
     //remove from file
     if ( i === 0)
       console.log('zero index')
@@ -92,7 +91,6 @@ export const parseFile = (rawData) => {
           rawData = data.rawData
           continue
         }
-        //console.log('line...')
         if (line.indexOf('~') >= 0) {//section heading
           line = getSections(line, dispatch)
           
@@ -119,15 +117,12 @@ export const parseFile = (rawData) => {
           }
           else {
             i = line.search(/\s/)
-            //console.log('no space after .', i, line)
             mnem = line.slice(0, i)
             line = line.slice(i + 1)
-            //console.log('mnem', mnem, '---',  line, i)
             i = mnem.search(/\./)
             unit = mnem.slice(i + 1)
             mnem = mnem.slice(0, i)
           }
-          //console.log('2',mnem, unit)
           //data and desc left
           line = line.trim()
           let dataAndDesc = line.split(/:/).filter(val => {
@@ -145,7 +140,6 @@ export const parseFile = (rawData) => {
             data: data,
             desc: desc
           }
-          //console.log('3',dataEntry)
           dispatch(addData(section, dataEntry))
         }
         data = getLine(rawData)
@@ -170,7 +164,6 @@ const getSections = (line, dispatch) => {
     line = 'WELL';
   }
   if (line.search(/~C\w?/i) >= 0) {
-    console.log('found curve info', line)
     line = 'CURVE_INFORMATION';
   }
   return line;

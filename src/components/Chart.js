@@ -5,7 +5,6 @@ import ChartJs from 'chart.js'
 
 class Chart extends Component {
   constructor(props) {
-    console.log('chart constructor')
     super(props);
     this.state = {
       title: '',
@@ -80,7 +79,6 @@ class Chart extends Component {
   }
 
   initChart() {
-    console.log(this.props.info.chartSettings)
     let labels = []
     let op = 1.0
     let lineColor = ['rgba(0, 0, 0, ' + op + ')']
@@ -139,7 +137,6 @@ class Chart extends Component {
     }
     if (this.props.info.readingFile && this.state.chart) {
       this.popData(this.state.chart).then(pr => {
-        console.log('chart cleared of data')
         this.state.chart.update()
       })
     }
@@ -196,7 +193,6 @@ class Chart extends Component {
       }
       if (data.length > 0) {
         if (this.props.title !== this.state.title) {
-          console.log('title change')
           this.state.title = this.props.title
           this.state.chart.reset()
         }

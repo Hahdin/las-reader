@@ -33,7 +33,6 @@ const lasFile = (state = initialState, action) => {
         chunk: state.chunk + 1
       }
       case RESET_LAS://reset ascii only
-      //console.log('lasFile reset')
       return {
         ...state,
         [ASCII]: {
@@ -51,7 +50,6 @@ const lasFile = (state = initialState, action) => {
         }
       }
     case ADD_DATA:
-   // console.log('add data',action.data )
       return {
         ...state,
         [action.section]:{
