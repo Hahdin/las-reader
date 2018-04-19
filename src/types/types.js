@@ -12,6 +12,9 @@ export const RESET_LAS = 'RESET_LAS'
 export const CURRENT_SECTION = 'CURRENT_SECTION'
 export const CHART_CURVE = 'CHART_CURVE'
 
+//Chart
+export const UPDATE_SCALE = 'UPDATE_SCALE'
+
 export default {
     READING_FILE,
     OPEN_FILE,
@@ -24,4 +27,5 @@ export default {
     RESET_LAS,
     CURRENT_SECTION,
     CHART_CURVE,
+    UPDATE_SCALE,
 }
