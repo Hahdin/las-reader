@@ -12,7 +12,6 @@ class ComboBox extends Component {
     this.onChange = this.onChange.bind(this)
   }
   onChange(e){
-    console.log('onchange', e.target.value)
     this.setState({value: e.target.value})
     this.props.onChange(e)
 

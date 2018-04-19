@@ -13,7 +13,6 @@ const Section = ({ section, heading}) => {
       if (!key)
         return
       if (!section[key][thing]){
-        ///console.log('missing thing?', section)
         return 
       }
       entry += ' ' +JSON.stringify(section[key][thing]).replace(/\\r|{|}|\"/g, '')

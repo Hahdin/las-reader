@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 //import '../styles/InfoDivLas.css'
 
 const InfoDiv = ({ info}) => {
-  //console.log(info)
   if(!info.name)
     return <div></div>
   let items = []

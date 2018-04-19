@@ -5,7 +5,6 @@ import ChartJs from 'chart.js'
 
 class Chart extends Component {
   constructor(props) {
-    console.log('chart constructor')
     super(props);
     this.state = {
       title: '',
@@ -14,20 +13,32 @@ class Chart extends Component {
         readingFile: false
       },
       chart: null,
+      linearScaleOptions: [{
+        id: 'y-axis-0',
+        display: true,
+        type: 'linear',
+        position: 'left',
+      }],
+      logarithmicScaleOptions: [{
+        id: 'y-axis-0',
+        display: true,
+        type: 'logarithmic',
+        position: 'left',
+      }],
     }
   }
 
-  getBuckets(data, size){
-    let bucketSize = Math.round((data.length / 2) / size )
+  getBuckets(data, size) {
+    let bucketSize = Math.round((data.length / 2) / size)
     let count = 0
     let bucket = []
     let buckets = []
-    data.forEach(point =>{
-      if (count < bucketSize){
+    data.forEach(point => {
+      if (count < bucketSize) {
         count++
         bucket.push(point)
       }
-      else{
+      else {
         buckets.push(bucket)
         count = 0
         bucket = []
@@ -71,6 +82,7 @@ class Chart extends Component {
     let labels = []
     let op = 1.0
     let lineColor = ['rgba(0, 0, 0, ' + op + ')']
+    let scaleOptions = this.props.info.chartSettings.scaleType === 'linear' ? this.state.linearScaleOptions : this.state.logarithmicScaleOptions
 
     let body = {
       type: 'line',
@@ -82,19 +94,15 @@ class Chart extends Component {
           fill: false,
           borderColor: lineColor,
           backgroundColor: ['rgba(255,255,255, 0.3)'],
-          borderWidth: 0.5,
+          borderWidth: 1,
           pointStyle: 'circle',
-          pointRadius: 1
+          pointRadius: 3
         }]
       },
       options: {
-        responsive: false,
+        responsive: true,
         scales: {
-          yAxes: [{
-            ticks: {
-              beginAtZero: true,
-            }
-          }]
+          yAxes: scaleOptions
         }
       }
     }
@@ -105,11 +113,8 @@ class Chart extends Component {
     }
 
     if (document.getElementById("myChart")) {
-      console.log('found chart in page')
       ctx = document.getElementById("myChart").getContext("2d")
-      this.setState({chart: new ChartJs(ctx, body)})
-      //this.state.chart = new ChartJs(ctx, body)
-      console.log('\t new chart!!')
+      this.setState({ chart: new ChartJs(ctx, body) })
     }
   }
 
@@ -132,7 +137,6 @@ class Chart extends Component {
     }
     if (this.props.info.readingFile && this.state.chart) {
       this.popData(this.state.chart).then(pr => {
-        console.log('chart cleared of data')
         this.state.chart.update()
       })
     }
@@ -153,13 +157,11 @@ class Chart extends Component {
         return parseFloat(line[curveIndex]) === -999.25 ? null : parseFloat(line[curveIndex])
       })
 
-      if (ourLabels.length > window.innerWidth / 2) {
+      let factor = 5
+      if (ourLabels.length > window.innerWidth / factor) {
         //bucket them
-        let labelBuckets = this.getBuckets(ourLabels, window.innerWidth / 4)
-        let pointsBuckets = this.getBuckets(ourPoints, window.innerWidth / 4)
-        //console.log("$$",labelBuckets)
-        // let labelBuckets = this.getBuckets(ourLabels, 10)
-        // let pointsBuckets = this.getBuckets(ourPoints, 10)
+        let labelBuckets = this.getBuckets(ourLabels, window.innerWidth / (factor * 2))
+        let pointsBuckets = this.getBuckets(ourPoints, window.innerWidth / (factor * 2))
         let pointsMinMax = []
         let labelsMinMax = []
         pointsBuckets.forEach(bucket => {
@@ -178,26 +180,19 @@ class Chart extends Component {
         labelBuckets.forEach(bucket => {
           let i = Math.round(bucket.length > 1 ? bucket.length / 2 : 0)
           if (parseFloat(bucket[0]) == -999.25) {
-            //console.log('label i', i, bucket[0])
           }
-          //console.log(bucket[0])
           labelsMinMax.push(bucket[0])
           labelsMinMax.push(bucket[i])
         })
 
-        //console.log('$$',labelsMinMax, pointsMinMax)
-
         data = pointsMinMax
         ourLabels = labelsMinMax
       }
-      else{
+      else {
         data = ourPoints
       }
-
-
       if (data.length > 0) {
         if (this.props.title !== this.state.title) {
-          console.log('title change')
           this.state.title = this.props.title
           this.state.chart.reset()
         }
@@ -209,6 +204,15 @@ class Chart extends Component {
             data.map(point => {
               set.data.push(point)
             })
+            let { r, g, b, rr, gg, bb } = this.getNewColors()
+            set.borderColor = ['rgba(' + r + ', ' + g + ', ' + b + ', 1.0)']
+            set.backgroundColor = ['rgba(' + rr + ', ' + gg + ', ' + bb + ', 1.0)']
+            if (this.state.chart) {
+              if (this.props.info.chartSettings.scaleType !== this.state.chart.options.scales.yAxes[0].type) {
+                let scaleOptions = this.props.info.chartSettings.scaleType === 'linear' ? this.state.linearScaleOptions : this.state.logarithmicScaleOptions
+                this.state.chart.options.scales.yAxes = ChartJs.helpers.scaleMerge(ChartJs.defaults.scale, { yAxes: scaleOptions }).yAxes
+              }
+            }
             this.state.chart.update()
           }
         })
@@ -222,6 +226,16 @@ class Chart extends Component {
         </div>
       </div >
     )
+  }
+
+  getNewColors() {
+    let r = Math.round(Math.random() * 255);
+    let g = Math.round(Math.random() * 255);
+    let b = Math.round(Math.random() * 255);
+    let rr = 255 - r;
+    let gg = 255 - g;
+    let bb = 255 - b;
+    return { r, g, b, rr, gg, bb };
   }
 }
 

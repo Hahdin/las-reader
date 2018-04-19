@@ -6,13 +6,13 @@ const mapStateToProps = (state, ownProps) => {
     title: state.files.name || '',
     info: {
       file: state.lasFile,
-      readingFile: state.files.reading || false
+      readingFile: state.files.reading || false,
+      chartSettings: state.chartSettings
     }
   })
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
-  console.log('chart container', ownProps)
   return ({
       test: () =>{
       }
