@@ -142,9 +142,9 @@ class Chart extends Component {
     }
     else if (this.state.chart && curveIndex >= 1) {
       this.state.chart.data.datasets.forEach(set => {
-        if (set.label === 'Curve Data') {
+        //if (set.label === 'Curve Data') {
           set.data = []
-        }
+        //}
       })
       this.state.chart.data.labels = []
       //copy the data
@@ -200,10 +200,13 @@ class Chart extends Component {
           this.state.chart.data.labels.push(parseFloat(label))
         })
         this.state.chart.data.datasets.forEach(set => {
-          if (set.label === 'Curve Data') {
+          console.log('set')
+          //if (set.label === 'Curve Data') {
             data.map(point => {
               set.data.push(point)
             })
+            let ci = this.props.info.file.CURVE_INFORMATION[this.props.info.file.chartCurve]
+            set.label = ci.mnem + ' '  + ci.unit
             let { r, g, b, rr, gg, bb } = this.getNewColors()
             set.borderColor = ['rgba(' + r + ', ' + g + ', ' + b + ', 1.0)']
             set.backgroundColor = ['rgba(' + rr + ', ' + gg + ', ' + bb + ', 1.0)']
@@ -214,8 +217,9 @@ class Chart extends Component {
               }
             }
             this.state.chart.update()
-          }
+          //}
         })
+        //this.state.chart.update()
       }
     }
     return (
