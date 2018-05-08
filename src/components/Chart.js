@@ -142,9 +142,7 @@ class Chart extends Component {
     }
     else if (this.state.chart && curveIndex >= 1) {
       this.state.chart.data.datasets.forEach(set => {
-        if (set.label === 'Curve Data') {
-          set.data = []
-        }
+        set.data = []
       })
       this.state.chart.data.labels = []
       //copy the data
@@ -200,21 +198,21 @@ class Chart extends Component {
           this.state.chart.data.labels.push(parseFloat(label))
         })
         this.state.chart.data.datasets.forEach(set => {
-          if (set.label === 'Curve Data') {
-            data.map(point => {
-              set.data.push(point)
-            })
-            let { r, g, b, rr, gg, bb } = this.getNewColors()
-            set.borderColor = ['rgba(' + r + ', ' + g + ', ' + b + ', 1.0)']
-            set.backgroundColor = ['rgba(' + rr + ', ' + gg + ', ' + bb + ', 1.0)']
-            if (this.state.chart) {
-              if (this.props.info.chartSettings.scaleType !== this.state.chart.options.scales.yAxes[0].type) {
-                let scaleOptions = this.props.info.chartSettings.scaleType === 'linear' ? this.state.linearScaleOptions : this.state.logarithmicScaleOptions
-                this.state.chart.options.scales.yAxes = ChartJs.helpers.scaleMerge(ChartJs.defaults.scale, { yAxes: scaleOptions }).yAxes
-              }
+          data.map(point => {
+            set.data.push(point)
+          })
+          let ci = this.props.info.file.CURVE_INFORMATION[this.props.info.file.chartCurve]
+          set.label = ci.mnem + ' ' + ci.unit
+          let { r, g, b, rr, gg, bb } = this.getNewColors()
+          set.borderColor = ['rgba(' + r + ', ' + g + ', ' + b + ', 1.0)']
+          set.backgroundColor = ['rgba(' + rr + ', ' + gg + ', ' + bb + ', 1.0)']
+          if (this.state.chart) {
+            if (this.props.info.chartSettings.scaleType !== this.state.chart.options.scales.yAxes[0].type) {
+              let scaleOptions = this.props.info.chartSettings.scaleType === 'linear' ? this.state.linearScaleOptions : this.state.logarithmicScaleOptions
+              this.state.chart.options.scales.yAxes = ChartJs.helpers.scaleMerge(ChartJs.defaults.scale, { yAxes: scaleOptions }).yAxes
             }
-            this.state.chart.update()
           }
+          this.state.chart.update()
         })
       }
     }
