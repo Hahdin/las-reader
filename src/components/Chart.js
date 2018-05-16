@@ -101,6 +101,7 @@ class Chart extends Component {
       },
       options: {
         responsive: true,
+        maintainAspectRatio: false,
         scales: {
           yAxes: scaleOptions
         }
@@ -132,8 +133,10 @@ class Chart extends Component {
     }
 
     let style = {
-      height: '600px',
-      width: '100%'
+      height: '80vh',
+      width: '80vw',
+      position: 'relative',
+      margin: 'auto',
     }
     if (this.props.info.readingFile && this.state.chart) {
       this.popData(this.state.chart).then(pr => {
@@ -218,7 +221,7 @@ class Chart extends Component {
     }
     return (
       <div>
-        <div id="chartContainer" style={style}>
+        <div style={style}>
           <canvas id="myChart" style={style}></canvas>
           {this.props.test()}
         </div>
