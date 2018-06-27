@@ -121,7 +121,10 @@ export const parseFile = (rawData) => {
   return (dispatch, getState) => {
     if (!versionPassed && !checkVersion(rawData.slice(0))) {
       alert(`*Only LAS Version 2.0 files are supported`)
-      return
+      dispatch(readingFile(false))
+      //rawData.badVersion = true
+      throw Error('Bad Version')
+      //return
     }
     let data = getLine(rawData)
     let line = data.line

@@ -155,7 +155,10 @@ class Chart extends Component {
         return line[0]
       })
       let ourPoints = data.map(line => {
-        return parseFloat(line[curveIndex]) === -999.25 ? null : parseFloat(line[curveIndex])
+        if (parseFloat(line[curveIndex]) !== -999.25){
+          return parseFloat(line[curveIndex])
+        }
+        //return parseFloat(line[curveIndex]) === -999.25 ? null : parseFloat(line[curveIndex])
       })
 
       let factor = 5
