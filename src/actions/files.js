@@ -7,6 +7,7 @@ import {
   currentSection,
 } from './las'
 
+let versionPassed = false
 export const readingFile = (bool) => {
   return ({
     type: types.READING_FILE,
@@ -28,6 +29,8 @@ export const openFile = (file, rawData) => {
 
 export const _openFile = (file, rawData) => {
   return (dispatch, getState) => {
+    versionPassed = false
+    dispatch(reset())
     dispatch(openFile(file, rawData))
     dispatch(readingFile(true))
   }
@@ -38,6 +41,7 @@ export const getLine = (rawData) => {
   let line = ''
   if (i < 0)
     return { line, rawData }
+    // eslint-disable-next-line
     line = rawData.slice(0, i).replace(/\"/g, '')
     if (!line.length) {
       console.log('empty')
@@ -66,23 +70,73 @@ export const getLine = (rawData) => {
 //   return { data, file, line };
 // }
 
+const checkVersion = (raw) =>{
+
+  
+  console.log(raw)
+  let i = raw.indexOf('\n')
+  if (i >= 0) {
+    let line = raw.slice(0, i)
+    while (line) {
+      if (line.search(/VERS/i) >= 0) {
+        if (line.search(/3/i) >= 0) {
+          return false
+        }
+        if (line.search(/2/i) >= 0) {
+          versionPassed = true
+          return true
+        }
+      }
+      raw = raw.slice(i > 0 ? i + 1 : 0)
+      i = raw.indexOf('\n')
+      line = raw.slice(0, i)
+    }
+  } else{
+    return true
+  }
+
+
+  // let data = getLine(raw)
+  // let line = data.line
+  // let rawData = data.rawData
+  // console.log(line)
+  // while (line) {
+  //   if (line.search(/VERS/i) >= 0 && line.search(/3.0/) >= 0) {
+  //     console.log('found 3', line)
+  //     return false
+  //   } else if (line.search(/VERS/i) >= 0 && line.search(/2.0/) >= 0) {
+  //     console.log('found 2', line)
+  //     return true
+  //   }
+  //   data = getLine(raw)
+  //   line = data.line
+  //   rawData = data.rawData
+  // }
+   return true
+
+}
+
 export const parseFile = (rawData) => {
 
-    return (dispatch, getState) => {
-      let data = getLine(rawData)
-      let line = data.line
-      rawData = data.rawData// rawData with line removed
+  return (dispatch, getState) => {
+    if (!versionPassed && !checkVersion(rawData.slice(0))) {
+      alert(`*Only LAS Version 2.0 files are supported`)
+      return
+    }
+    let data = getLine(rawData)
+    let line = data.line
+    rawData = data.rawData// rawData with line removed
 
-      //tracking
-      let section = ''//the current section we are processing
-      //let dataEntry = {}
-      //let dataLine = 0
-      let ascii = []
-      while (line) {
-        //if this is not the first chunk(section), check what section we are in
-        line = line.trim()
-        let chunk = parseInt(getState().lasFile.chunk, 10 )
-        if (chunk > 1) {
+    //tracking
+    let section = ''//the current section we are processing
+    //let dataEntry = {}
+    //let dataLine = 0
+    let ascii = []
+    while (line) {
+      //if this is not the first chunk(section), check what section we are in
+      line = line.trim()
+      let chunk = parseInt(getState().lasFile.chunk, 10)
+      if (chunk > 1) {
           section = getState().lasFile.section
         }
         if (line.startsWith('#')) {//comment, skip
@@ -102,7 +156,7 @@ export const parseFile = (rawData) => {
           }
         }
         else if (section === 'ASCII') {
-          let values = line.split(/\s+/g).filter(val => {
+          let values = line.split(/\s+/g).map(val => {
             return parseFloat(val)
           })
           ascii.push(values)
@@ -125,7 +179,7 @@ export const parseFile = (rawData) => {
           }
           //data and desc left
           line = line.trim()
-          let dataAndDesc = line.split(/:/).filter(val => {
+          let dataAndDesc = line.split(/:/).map(val => {
             return val
           })
           if (dataAndDesc.length < 2)
@@ -140,6 +194,14 @@ export const parseFile = (rawData) => {
             data: data,
             desc: desc
           }
+          // if (section === 'VERSION'){
+          //   console.log(dataEntry)
+          //   if (dataEntry.mnem === 'VERS' && parseFloat(dataEntry.data) > 2) {
+          //     alert(`LAS Version ${dataEntry.data} files are not supported`)
+          //     return
+          //   }
+          // }
+  
           dispatch(addData(section, dataEntry))
         }
         data = getLine(rawData)
