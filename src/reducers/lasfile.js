@@ -33,16 +33,15 @@ const lasFile = (state = initialState, action) => {
         chunk: state.chunk + 1
       }
       case RESET_LAS://reset ascii only
-      return {}
-      // return {
-      //   ...state,
-      //   [ASCII]: {
-      //     data:[]
-      //   },
-      //   ['CURVE_INFORMATION']:{
+      return {
+        ...state,
+        [ASCII]: {
+          data:[]
+        },
+        ['CURVE_INFORMATION']:{
           
-      //   }
-      // }
+        }
+      }
     case ADD_SECTION:
       return {
         ...state,
