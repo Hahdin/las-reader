@@ -77,6 +77,8 @@ const checkVersion = (raw) => {
       }
       raw = raw.slice(i > 0 ? i + 1 : 0)
       i = raw.indexOf('\n')
+      if ( i < 0)
+        return true
       line = raw.slice(0, i)
     }
   } else {
@@ -95,30 +97,26 @@ export const parseFile = (rawData) => {
     let data = getLine(rawData)
     let line = data.line
     rawData = data.rawData// rawData with line removed
-
     //tracking
     let section = ''//the current section we are processing
-    //let dataEntry = {}
-    //let dataLine = 0
     let ascii = []
     while (line) {
       //if this is not the first chunk(section), check what section we are in
       line = line.trim()
+      
+        
       let chunk = parseInt(getState().lasFile.chunk, 10)
       if (chunk > 1) {
         section = getState().lasFile.section
       }
-      if (line.startsWith('#')) {//comment, skip
+      if (line.startsWith('#') || line.length === 0) {//comment or empty line, skip
         data = getLine(rawData)
         line = data.line
         rawData = data.rawData
         continue
       }
-
       if (line.search(/~/) === 0) {//section heading
-      //if (line.indexOf('~') >= 0) {//section heading
         line = getSections(line, dispatch)
-
         section = line
         dispatch(addSection(line))
         dispatch(currentSection(section))
@@ -132,10 +130,13 @@ export const parseFile = (rawData) => {
         })
         ascii.push(values)
       }
+      else if (section === 'OTHER_INFORMATION') {
+        //skip for now
+      }
       else {//not a heading
         //format MNEM.UNIT Data after unit space until colon: Description
         let mnem = '', unit = '', data = '', desc = ''
-        let rgData = /([A-Za-z0-9_()]+)[.](\S*)\s+(.*)[:]\s*(.*)/.exec(line)
+        let rgData = /([A-Za-z0-9_()]+)\s*[.](\S*)\s+(.*)[:]\s*(.*)/.exec(line)
         if ( rgData){
           mnem = rgData[1]
           unit = rgData[2]
@@ -145,11 +146,21 @@ export const parseFile = (rawData) => {
           console.log('??', line)
           return
         }
+        mnem.toUpperCase()
         let dataEntry = {
           mnem: mnem,
           unit: unit,
           data: data,
           desc: desc
+        }
+        if ( section === "VERSION" && mnem === 'WRAP'){
+          let t = data
+          t.toUpperCase()
+          t = t.trim()
+          if (t === 'YES'){
+            alert('WRAPPED Las files are not supported')
+            throw Error('WRAPPED Las files are not supported')
+          }
         }
         dispatch(addData(section, dataEntry))
       }
@@ -175,6 +186,9 @@ const getSections = (line, dispatch) => {
   }
   if (line.search(/~C\w?/i) >= 0) {
     line = 'CURVE_INFORMATION';
+  }
+  if (line.search(/~O\w?/i) >= 0) {
+    line = 'OTHER_INFORMATION';
   }
   return line;
 }
