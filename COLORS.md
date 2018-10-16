@@ -39,13 +39,3 @@ Reverse = "\x1b[7m"
 Hidden = "\x1b[8m"
 ```
 
-WML-READINGS 2 9566821 {
-    "Reading/Pressure":7.66254E7,
-    "Origin/Address":1115373,
-    "Reading/Seqno":12124736,
-    "Server/Timestamp":"2017-10-25T15:45:22.057078",
-    "Boundary/Address":39132,
-    "Origin/Interval":1.0,
-    "Origin/Timestamp":"2017-10-25T15:45:19.000000",
-    "Reading/Temperature":0.86
-    }
