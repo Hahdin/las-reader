@@ -4,11 +4,8 @@ import {
   Navbar,
   Nav,
   NavItem,
-  NavDropdown,
 } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
 const MyNavBar = ({ ...props }) => {
   return (
     <Navbar inverse fluid collapseOnSelect style={{boxShadow: '2px 2px 10px black'}}>

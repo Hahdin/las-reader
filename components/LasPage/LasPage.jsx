@@ -16,8 +16,8 @@ const LasPage = ({ ...props }) => {
     <div>
       <LasInputFile />
       <Grid fluid>
-        <Row>
-          <Col xs={2} md={4}>
+        <Row className="show-grid">
+          <Col xs={4} md={4}>
             <div style={{ backgroundColor: 'white' }}>
               <Tabs defaultActiveKey={1}>
               <Tab eventKey={1}  title={'Well'}>
@@ -26,12 +26,6 @@ const LasPage = ({ ...props }) => {
                     heading={'Well'}
                   />
                 </Tab>
-                {/* <Tab eventKey={2}  title={'Version'}>
-                  <Section
-                    section={props.files.VERSION}
-                    heading={'Version'}
-                  />
-                </Tab> */}
                 <Tab eventKey={2}  title={'Curves'}>
                   <Section
                     section={props.files.CURVE_INFORMATION}
@@ -47,7 +41,7 @@ const LasPage = ({ ...props }) => {
               </Tabs>
             </div>
           </Col>
-          <Col xs={2} md={8}>
+          <Col xs={8} md={8}>
             <div style={{ backgroundColor: 'white' }}><Chart /></div>
           </Col>
         </Row>
