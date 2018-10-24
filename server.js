@@ -1,5 +1,5 @@
 import express from 'express'
-const port = 5555
+const port = process.env.PORT || 5555
 const app = express()
 import path  from 'path'
 app.use(express.static('dist'))
