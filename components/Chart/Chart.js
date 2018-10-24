@@ -150,7 +150,7 @@ class Chart extends Component {
       })
       this.state.chart.data.labels = []
       //copy the data
-      let data = this.props.info.file.ASCII.data.slice(0)
+      let data = [...this.props.info.file.ASCII.data]
       //get our data
       let ourLabels = data.map(line => {
         return line[0]
@@ -159,7 +159,6 @@ class Chart extends Component {
         if (parseFloat(line[curveIndex]) !== -999.25){
           return parseFloat(line[curveIndex])
         }
-        //return parseFloat(line[curveIndex]) === -999.25 ? null : parseFloat(line[curveIndex])
       })
 
       let factor = 5
@@ -170,17 +169,14 @@ class Chart extends Component {
         let pointsMinMax = []
         let labelsMinMax = []
         pointsBuckets.forEach(bucket => {
-          let min = 0, max = 0
-          bucket.forEach((point, i) => {
-            if (i === 0)
-              min = max = point
-            else {
-              min = point < min ? point : min
-              max = point > max ? point : max
-            }
+          let arMax = bucket.reduce((total, point) =>{
+            return point === undefined ? total : total === undefined ? total : total > point ? total : point
           })
-          pointsMinMax.push(min)
-          pointsMinMax.push(max)
+          let arMin = bucket.reduce((total, point, i) =>{
+            return point === undefined ? total : total === undefined ? total : i === 0 ? point : total < point ? total : point
+          })
+          pointsMinMax.push(arMin)
+          pointsMinMax.push(arMax)
         })
         labelBuckets.forEach(bucket => {
           let i = Math.round(bucket.length > 1 ? bucket.length / 2 : 0)
