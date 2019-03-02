@@ -117,19 +117,36 @@ export const parseFile = (rawData) => {
       else {//not a heading
         //format MNEM.UNIT Data after unit space until colon: Description
         let mnem = '', unit = '', data = '', desc = ''
-        let rgData = /([A-Za-z0-9_()]+)\s*[.](\S*)\s+(.*)[:]\s*(.*)/.exec(line)
-        //let rgData = /([A-Za-z0-9_()]+)\s*[.](\S*)\s+(\w+)[:\s+]\s*(.*)/.exec(line)
+        let rgData = /\s*([^.:\s]+)\s*[.]([^:\s]*)\s+(.*)[:]\s*(.*)/.exec(line)
+        /**
+          MNEM = mnemonic. This mnemonic can be of any length but must not contain any internal
+          spaces, dots, or colons. Spaces are permitted in front of the mnemonic and between the
+          end of the mnemonic and the dot.   
+          
+          UNITS = units of the mnemonic (if applicable). The units, if used, must be located directly
+          after the dot. There must be no spaces between the units and the dot. The units can be of
+          any length but must not contain any colons or internal spaces.
+
+          DATA = value of, or data relating to the mnemonic. This value or input can be of any length
+          and can contain spaces, dots or colons as appropriate. It must be preceded by at least one
+          space to demarcate it from the units and must be to the left of the last colon in the line.
+
+          DESCRIPTION = description or definition of the mnemonic. It is always located to the right
+          of the last colon. The length of the line is no longer limited.
+          * 
+         */
 
         if ( rgData){
-          mnem = rgData[1]
-          unit = rgData[2]
-          data = rgData[3]
-          desc = rgData[4]
+          mnem = rgData[1].trim()
+          unit = rgData[2].trim()
+          data = rgData[3].trim()
+          desc = rgData[4].trim()
         } else{
           console.log('??', line)
           return
         }
-        mnem.toUpperCase()
+
+        mnem.toUpperCase() 
         let dataEntry = {
           mnem: mnem,
           unit: unit,
